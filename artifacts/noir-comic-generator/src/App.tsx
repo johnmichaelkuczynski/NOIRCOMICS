@@ -208,8 +208,10 @@ function Home() {
                   {comic.panels.map((panel, index) => (
                     <article className="comic-card" key={`${panel.index}-${index}`} data-testid={`card-comic-panel-${panel.index}`} style={{ animationDelay: `${index * 70}ms` }}>
                       <div className="comic-art-frame">
+                        <div className="comic-dialogue-space">
+                          <div className="speech-balloon">{panel.dialogue}</div>
+                        </div>
                         <img className="comic-image" src={panel.imageDataUri} alt={`Panel ${panel.index}: ${panel.visualDescription}`} data-testid={`img-comic-panel-${panel.index}`} />
-                        <div className="speech-balloon">{panel.dialogue}</div>
                       </div>
                       <div className="comic-caption">
                         <div className="caption-top">Frame {String(panel.index).padStart(2, '0')}</div>

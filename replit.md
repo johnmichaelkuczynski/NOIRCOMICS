@@ -44,6 +44,7 @@ Converts a short essay or story into a selected number of black-and-white film-n
 
 - The user assumes short texts for now; short, information-dense writing may still need many panels.
 - Match the provided photographic black-and-white noir comic style, rather than a generic illustrated comic style.
+- Keep speech balloons compact and out of the way of faces and valuable imagery.
 
 ## Gotchas
 

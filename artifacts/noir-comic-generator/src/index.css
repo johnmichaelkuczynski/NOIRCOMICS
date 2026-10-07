@@ -346,8 +346,9 @@ button { cursor: pointer; }
 .comic-card { background:#f7f4ed; border:1px solid #b9b2a7; padding:8px; box-shadow:4px 5px 0 rgba(65,59,49,.1); animation:rise .5s both; }
 .comic-art-frame { position:relative; border:2px solid #111; background:#111; }
 .comic-image { width:100%; aspect-ratio:2/3; display:block; object-fit:contain; background:#111; filter:grayscale(1); }
-.speech-balloon { position:absolute; top:4%; left:5%; width:90%; padding:15px 17px; border:2px solid #111; border-radius:44%; background:white; color:#080808; font:17px/1.22 Georgia,serif; text-align:center; overflow-wrap:anywhere; }
-.speech-balloon:after { content:""; position:absolute; left:23%; bottom:-19px; width:18px; height:28px; background:white; border-right:2px solid #111; border-bottom:2px solid #111; transform:skew(-25deg) rotate(24deg); clip-path:polygon(0 0,100% 0,100% 100%); }
+.comic-dialogue-space { display:flex; justify-content:center; padding:6px 8px 14px; background:#111; }
+.speech-balloon { position:relative; width:fit-content; max-width:100%; padding:8px 12px; border:1px solid #111; border-radius:24px; background:white; color:#080808; font:14px/1.24 Georgia,serif; text-align:center; overflow-wrap:anywhere; }
+.speech-balloon:after { content:""; position:absolute; left:23%; bottom:-9px; width:11px; height:12px; background:white; clip-path:polygon(0 0,100% 0,0 100%); }
 .comic-caption { padding:12px 8px 9px; }
 .caption-top { display:flex; align-items:center; gap:8px; margin-bottom:7px; color:#a43b31; font:9px var(--app-font-mono); letter-spacing:.13em; text-transform:uppercase; }
 .caption-top:after { content:""; height:1px; flex:1; background:#d7d0c4; }
