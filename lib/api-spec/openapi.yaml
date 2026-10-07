@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: comics
+    description: Comic generation
 paths:
   /healthz:
     get:
@@ -24,6 +26,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /comics/generate:
+    post:
+      operationId: generateComic
+      tags: [comics]
+      summary: Generate a noir comic from text
+      description: Converts a short source text into the requested number of film-noir comic panels.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComicGenerationInput"
+      responses:
+        "200":
+          description: The generated comic
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComicGeneration"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Generation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +66,63 @@ components:
           type: string
       required:
         - status
+    ComicGenerationInput:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 8000
+          description: Source essay, story, or other short text.
+        panelCount:
+          type: integer
+          minimum: 1
+          maximum: 8
+        styleReferenceImage:
+          type: string
+          minLength: 1
+          maxLength: 6000000
+          description: A data URI containing the supplied noir style reference image.
+      required:
+        - text
+        - panelCount
+        - styleReferenceImage
+    ComicPanel:
+      type: object
+      properties:
+        index:
+          type: integer
+          minimum: 1
+        visualDescription:
+          type: string
+        dialogue:
+          type: string
+        imageDataUri:
+          type: string
+      required:
+        - index
+        - visualDescription
+        - dialogue
+        - imageDataUri
+    ComicGeneration:
+      type: object
+      properties:
+        title:
+          type: string
+        panels:
+          type: array
+          minItems: 1
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/ComicPanel"
+      required:
+        - title
+        - panels
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
 

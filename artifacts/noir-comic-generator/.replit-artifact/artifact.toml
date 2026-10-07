@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Noir Comic Generator"
+description = "Turn a short story, essay, or pasted text into a user-selected number of cinematic black-and-white film-noir comic panels, preserving the source meaning and keeping dialogue readable."
+version = "1.0.0"
+id = "artifacts/noir-comic-generator"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23377
+
+[services.development]
+run = "pnpm --filter @workspace/noir-comic-generator run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/noir-comic-generator", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/noir-comic-generator/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23377"
+BASE_PATH = "/"
