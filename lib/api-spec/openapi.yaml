@@ -13,6 +13,18 @@ tags:
   - name: comics
     description: Comic generation
 paths:
+  /comics/providers:
+    get:
+      operationId: getComicProviders
+      tags: [comics]
+      summary: Check comic provider configuration and Venice connectivity
+      responses:
+        "200":
+          description: Safe provider status, without credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComicProviders"
   /healthz:
     get:
       operationId: healthCheck
@@ -69,6 +81,10 @@ components:
     ComicGenerationInput:
       type: object
       properties:
+        provider:
+          type: string
+          enum: [auto, openai, venice]
+          description: Image provider. Auto uses Venice for supported non-explicit mature themes.
         text:
           type: string
           minLength: 1
@@ -107,6 +123,11 @@ components:
     ComicGeneration:
       type: object
       properties:
+        providerUsed:
+          type: string
+          enum: [openai, venice]
+        imageModel:
+          type: string
         title:
           type: string
         panels:
@@ -118,6 +139,27 @@ components:
       required:
         - title
         - panels
+        - providerUsed
+        - imageModel
+    ComicProviders:
+      type: object
+      properties:
+        openaiConfigured:
+          type: boolean
+        veniceConfigured:
+          type: boolean
+        veniceConnected:
+          type: boolean
+        veniceMessage:
+          type: string
+        veniceImageModel:
+          type: string
+      required:
+        - openaiConfigured
+        - veniceConfigured
+        - veniceConnected
+        - veniceMessage
+        - veniceImageModel
     ApiError:
       type: object
       properties:

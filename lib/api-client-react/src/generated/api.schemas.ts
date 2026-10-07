@@ -9,7 +9,21 @@ export interface HealthStatus {
   status: string;
 }
 
+/**
+ * Image provider. Auto uses Venice for supported non-explicit mature themes.
+ */
+export type ComicGenerationInputProvider = typeof ComicGenerationInputProvider[keyof typeof ComicGenerationInputProvider];
+
+
+export const ComicGenerationInputProvider = {
+  auto: 'auto',
+  openai: 'openai',
+  venice: 'venice',
+} as const;
+
 export interface ComicGenerationInput {
+  /** Image provider. Auto uses Venice for supported non-explicit mature themes. */
+  provider?: ComicGenerationInputProvider;
   /**
      * Source essay, story, or other short text.
      * @minLength 1
@@ -37,13 +51,31 @@ export interface ComicPanel {
   imageDataUri: string;
 }
 
+export type ComicGenerationProviderUsed = typeof ComicGenerationProviderUsed[keyof typeof ComicGenerationProviderUsed];
+
+
+export const ComicGenerationProviderUsed = {
+  openai: 'openai',
+  venice: 'venice',
+} as const;
+
 export interface ComicGeneration {
+  providerUsed: ComicGenerationProviderUsed;
+  imageModel: string;
   title: string;
   /**
      * @minItems 1
      * @maxItems 24
      */
   panels: ComicPanel[];
+}
+
+export interface ComicProviders {
+  openaiConfigured: boolean;
+  veniceConfigured: boolean;
+  veniceConnected: boolean;
+  veniceMessage: string;
+  veniceImageModel: string;
 }
 
 export interface ApiError {

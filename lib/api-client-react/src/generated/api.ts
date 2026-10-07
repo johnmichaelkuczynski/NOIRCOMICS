@@ -23,6 +23,7 @@ import type {
   ApiError,
   ComicGeneration,
   ComicGenerationInput,
+  ComicProviders,
   HealthStatus
 } from './api.schemas';
 
@@ -52,6 +53,83 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getGetComicProvidersUrl = () => {
+
+
+
+
+  return `/api/comics/providers`
+}
+
+/**
+ * @summary Check comic provider configuration and Venice connectivity
+ */
+export const getComicProviders = async ( options?: Parameters<typeof customFetch>[1]): Promise<ComicProviders> => {
+
+  return customFetch<ComicProviders>(getGetComicProvidersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetComicProvidersQueryKey = () => {
+    return [
+    `/api/comics/providers`
+    ] as const;
+    }
+
+
+export const getGetComicProvidersQueryOptions = <TData = Awaited<ReturnType<typeof getComicProviders>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getComicProviders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetComicProvidersQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getComicProviders>>> = ({ signal }) => getComicProviders({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getComicProviders>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetComicProvidersQueryResult = NonNullable<Awaited<ReturnType<typeof getComicProviders>>>
+export type GetComicProvidersQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Check comic provider configuration and Venice connectivity
+ */
+
+export function useGetComicProviders<TData = Awaited<ReturnType<typeof getComicProviders>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getComicProviders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetComicProvidersQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getHealthCheckUrl = () => {
 

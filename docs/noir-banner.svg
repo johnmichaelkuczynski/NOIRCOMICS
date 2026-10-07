@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-labelledby="title description">
+  <title id="title">Noir Comic Generator — Your words. A world of noir.</title>
+  <desc id="description">A colorful marketing banner with coral, violet, teal, and gold accents, cinematic light beams, and decorative black-and-white film frames.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#171829"/>
+      <stop offset=".55" stop-color="#30203d"/>
+      <stop offset="1" stop-color="#102e39"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff6c75"/>
+      <stop offset=".35" stop-color="#ac8bff"/>
+      <stop offset=".7" stop-color="#56ddcf"/>
+      <stop offset="1" stop-color="#ffd273"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#dbdce2"/>
+      <stop offset="1" stop-color="#3b3e4b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" rx="20" fill="url(#background)"/>
+  <path d="M770 0 1060 400H910L655 0Z" fill="#b194ff" opacity=".08"/>
+  <path d="m1130 0-90 400h80l80-320V0Z" fill="#67e4d0" opacity=".08"/>
+  <rect x="42" y="35" width="46" height="46" rx="8" fill="none" stroke="#ff7981" stroke-width="2"/>
+  <text x="65" y="64" text-anchor="middle" fill="#ff7981" font-family="Georgia, serif" font-size="22">N°</text>
+  <text x="104" y="64" fill="#f7ede6" font-family="Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="3">NOIR COMIC GENERATOR</text>
+  <text x="48" y="154" fill="#fff4e9" font-family="Georgia, serif" font-size="55" font-weight="700">Your words.</text>
+  <text x="48" y="219" fill="#fff4e9" font-family="Georgia, serif" font-size="55" font-weight="700">A world of noir.</text>
+  <text x="50" y="260" fill="#d6ccd9" font-family="Arial, sans-serif" font-size="20">Turn writing into cinematic black-and-white comics.</text>
+  <rect x="49" y="307" width="153" height="37" rx="18.5" fill="#ff7981"/>
+  <text x="125.5" y="331" text-anchor="middle" fill="#28172b" font-family="Arial, sans-serif" font-size="13" font-weight="700">BRING YOUR WORDS</text>
+  <rect x="213" y="307" width="136" height="37" rx="18.5" fill="#ad91ff"/>
+  <text x="281" y="331" text-anchor="middle" fill="#241b37" font-family="Arial, sans-serif" font-size="13" font-weight="700">1–24 FRAMES</text>
+  <rect x="360" y="307" width="152" height="37" rx="18.5" fill="#65dfcf"/>
+  <text x="436" y="331" text-anchor="middle" fill="#123530" font-family="Arial, sans-serif" font-size="13" font-weight="700">CINEMATIC NOIR</text>
+  <g transform="translate(783 80) rotate(-9)">
+    <rect width="146" height="227" rx="5" fill="#090b10" stroke="#ac8bff" stroke-width="3"/>
+    <rect x="12" y="13" width="122" height="179" fill="url(#frame)"/>
+    <path d="M12 26h122v12H12zm0 32h122v12H12zm0 32h122v12H12zm0 32h122v12H12z" fill="#1a1d27" opacity=".6"/>
+    <path d="M27 192q12-54 45-54t44 54Z" fill="#13151e"/>
+    <ellipse cx="72" cy="114" rx="24" ry="32" fill="#31343e"/>
+    <path d="M39 101h67l-13-17H56Z" fill="#11131b"/>
+    <path d="M52 84h42l-9-23H61Z" fill="#161822"/>
+    <rect x="17" y="204" width="76" height="4" rx="2" fill="#ac8bff"/>
+  </g>
+  <g transform="translate(964 117) rotate(8)">
+    <rect width="146" height="227" rx="5" fill="#090b10" stroke="#ffd273" stroke-width="3"/>
+    <rect x="12" y="13" width="122" height="179" fill="#20232e"/>
+    <path d="m12 28 122 80v26L12 55Zm0 58 122 80v26L12 113Z" fill="#c8c9d0" opacity=".6"/>
+    <path d="M14 192q22-65 59-65t59 65Z" fill="#11131b"/>
+    <ellipse cx="73" cy="104" rx="24" ry="32" fill="#555862"/>
+    <path d="M48 84q0-22 25-22t25 22l-9-8-14-6-16 7Z" fill="#141620"/>
+    <rect x="17" y="204" width="76" height="4" rx="2" fill="#ffd273"/>
+  </g>
+  <rect x="0" y="390" width="1200" height="10" fill="url(#accent)"/>
+</svg>

@@ -1,30 +1,15 @@
+import { classifyComicContent, ComicServiceError, illustrateWithVenice, OPENAI_IMAGE_MODEL, providerJson, VENICE_IMAGE_MODEL, type ImageProvider } from "./comic-providers";
+export { ComicServiceError } from "./comic-providers";
+
 type ComicInput = {
   text: string;
   panelCount: number;
   styleReferenceImage: string;
+  provider?: "auto" | ImageProvider;
 };
 
 type ScriptPanel = { visualDescription: string; dialogue: string };
 type ComicScript = { title: string; characterGuide: string; panels: ScriptPanel[] };
-
-export class ComicServiceError extends Error {
-  constructor(message: string, public readonly status = 500) {
-    super(message);
-  }
-}
-
-async function providerJson(response: globalThis.Response): Promise<Record<string, unknown>> {
-  if (!response.ok) {
-    if (response.status === 429) {
-      throw new ComicServiceError("OpenAI's usage or rate limit was reached. Check your API billing, or wait and try again.", 500);
-    }
-    if (response.status === 401 || response.status === 403) {
-      throw new ComicServiceError("OpenAI rejected the API key or access to the requested model. Check the project's OpenAI Secret and model access.", 500);
-    }
-    throw new ComicServiceError(`OpenAI could not complete generation (HTTP ${response.status}). Please try again.`, 500);
-  }
-  return await response.json() as Record<string, unknown>;
-}
 
 function parseScript(value: unknown, count: number): ComicScript {
   if (!value || typeof value !== "object") throw new ComicServiceError("OpenAI returned an invalid comic outline. Please try again.");
@@ -114,15 +99,18 @@ async function illustrate(
   characterGuide: string,
   reference: ReturnType<typeof referenceImage>,
   key: string,
+  provider: ImageProvider,
 ): Promise<string> {
+  const prompt = `Create ONE original vertical comic panel, not a comic page, grid, collage, or multiple frames. Use the attached image ONLY as an aesthetic reference, not as a subject or scene to reproduce. Match its black-and-white 1940s film-noir photographic comic aesthetic: cinematic realistic faces, deep ink-black shadows, crisp silvery highlights, dramatic chiaroscuro, hard Venetian-blind lighting where appropriate, subtle film grain, period atmosphere, detailed clothing and environments. No color or sepia. Consistent character appearance: ${characterGuide}\nScene for this panel: ${panel.visualDescription}\nCompose a single full-bleed scene with natural camera framing and clearly visible faces and action. Do NOT draw speech balloons, captions, titles, letters, text, logos, or borders. The app adds readable balloons in a separate strip, outside the photograph. Only non-explicit imagery is supported.`;
+  if (provider === "venice") return illustrateWithVenice(prompt, reference.bytes, key);
   const form = new FormData();
-  form.set("model", "gpt-image-1");
+  form.set("model", OPENAI_IMAGE_MODEL);
   form.set("size", "1024x1536");
   form.set("quality", "medium");
   form.set("output_format", "jpeg");
   form.set("output_compression", "70");
   form.set("image[]", new Blob([reference.bytes as Uint8Array<ArrayBuffer>], { type: reference.mime }), "noir-style-reference.jpg");
-  form.set("prompt", `Create ONE original vertical comic panel, not a comic page, grid, collage, or multiple frames. Use the attached image ONLY as an aesthetic reference, not as a subject or scene to reproduce. Match its black-and-white 1940s film-noir photographic comic aesthetic: cinematic realistic faces, deep ink-black shadows, crisp silvery highlights, dramatic chiaroscuro, hard Venetian-blind lighting where appropriate, subtle film grain, period atmosphere, detailed clothing and environments. No color or sepia. Consistent character appearance: ${characterGuide}\nScene for this panel: ${panel.visualDescription}\nCompose a single full-bleed scene with the main action and faces in the lower two-thirds, leaving quiet darker space in the upper third for the app's readable dialogue balloon. Do NOT draw speech balloons, captions, titles, letters, text, logos, or borders. The app adds these separately.`);
+  form.set("prompt", prompt);
   const response = await fetch("https://api.openai.com/v1/images/edits", {
     method: "POST",
     headers: { "Authorization": `Bearer ${key}` },
@@ -140,12 +128,21 @@ export async function createComic(input: ComicInput) {
   const key = process.env.OPENAI_API_KEY;
   if (!key) throw new ComicServiceError("Add OPENAI_API_KEY in the project's Replit Secrets before generating.");
   const reference = referenceImage(input.styleReferenceImage);
+  const category = await classifyComicContent(input.text, key);
+  const providerUsed: ImageProvider = input.provider && input.provider !== "auto"
+    ? input.provider
+    : category === "mature_non_explicit" ? "venice" : "openai";
+  const imageKey = providerUsed === "venice" ? process.env.VENICE_API_KEY : key;
+  if (!imageKey) throw new ComicServiceError("Add VENICE_API_KEY through Replit Secrets before using Venice.");
   const script = await writeScript(input, key);
-  const panels = await Promise.all(script.panels.map(async (panel, index) => ({
+  const outcomes = await Promise.allSettled(script.panels.map(async (panel, index) => ({
     index: index + 1,
     visualDescription: panel.visualDescription,
     dialogue: panel.dialogue,
-    imageDataUri: await illustrate(panel, script.characterGuide, reference, key),
+    imageDataUri: await illustrate(panel, script.characterGuide, reference, imageKey, providerUsed),
   })));
-  return { title: script.title, panels };
+  const failed = outcomes.find(result => result.status === "rejected");
+  if (failed?.status === "rejected") throw failed.reason;
+  const panels = outcomes.flatMap(result => result.status === "fulfilled" ? [result.value] : []);
+  return { title: script.title, panels, providerUsed, imageModel: providerUsed === "venice" ? VENICE_IMAGE_MODEL : OPENAI_IMAGE_MODEL };
 }

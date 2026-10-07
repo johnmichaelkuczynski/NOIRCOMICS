@@ -9,6 +9,18 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Check comic provider configuration and Venice connectivity
+ */
+export const GetComicProvidersResponse = zod.object({
+  "openaiConfigured": zod.boolean(),
+  "veniceConfigured": zod.boolean(),
+  "veniceConnected": zod.boolean(),
+  "veniceMessage": zod.string(),
+  "veniceImageModel": zod.string()
+})
+
+
+/**
  * Returns server health status
  * @summary Health check
  */
@@ -30,6 +42,7 @@ export const generateComicBodyStyleReferenceImageMax = 6000000;
 
 
 export const GenerateComicBody = zod.object({
+  "provider": zod.enum(['auto', 'openai', 'venice']).optional().describe('Image provider. Auto uses Venice for supported non-explicit mature themes.'),
   "text": zod.string().min(1).max(generateComicBodyTextMax).describe('Source essay, story, or other short text.'),
   "panelCount": zod.number().int().min(1).max(generateComicBodyPanelCountMax),
   "styleReferenceImage": zod.string().min(1).max(generateComicBodyStyleReferenceImageMax).describe('A data URI containing the supplied noir style reference image.')
@@ -41,6 +54,8 @@ export const generateComicResponsePanelsMax = 24;
 
 
 export const GenerateComicResponse = zod.object({
+  "providerUsed": zod.enum(['openai', 'venice']),
+  "imageModel": zod.string(),
   "title": zod.string(),
   "panels": zod.array(zod.object({
   "index": zod.number().int().min(1),

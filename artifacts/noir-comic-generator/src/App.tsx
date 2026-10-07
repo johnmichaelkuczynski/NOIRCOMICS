@@ -1,5 +1,5 @@
 import { useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
-import { useGenerateComic } from '@workspace/api-client-react';
+import { getGetComicProvidersQueryKey, useGenerateComic, useGetComicProviders, type ComicGenerationInputProvider } from '@workspace/api-client-react';
 import { ArrowUpRight, FileText, Upload } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -29,6 +29,7 @@ async function loadReferenceAsJpeg(): Promise<string> {
 function Home() {
   const [text, setText] = useState('');
   const [panelCount, setPanelCount] = useState(4);
+  const [provider, setProvider] = useState<ComicGenerationInputProvider>('openai');
   const [fileName, setFileName] = useState('');
   const [localError, setLocalError] = useState('');
   const [preparing, setPreparing] = useState(false);
@@ -36,6 +37,16 @@ function Home() {
   const mutation = useGenerateComic();
   const comic = mutation.data;
   const isGenerating = preparing || mutation.isPending;
+  const providerStatus = useGetComicProviders({
+    query: {
+      queryKey: getGetComicProvidersQueryKey(),
+      enabled: !isGenerating,
+      staleTime: 60_000,
+      refetchInterval: 60_000,
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  });
 
   async function readFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -81,7 +92,7 @@ function Home() {
       setPreparing(true);
       const styleReferenceImage = await loadReferenceAsJpeg();
       await mutation.mutateAsync({
-        data: { text: text.trim(), panelCount, styleReferenceImage },
+        data: { text: text.trim(), panelCount, styleReferenceImage, provider },
       });
     } catch (error) {
       const detail = error instanceof Error ? error.message : '';
@@ -168,7 +179,17 @@ function Home() {
                   </button>
                 ))}
               </div>
-              <p className="usage-note">Choose 1–24 panels. Each image uses your OpenAI API balance; more panels cost more.</p>
+              <div className="provider-row">
+                <label htmlFor="image-provider">Image provider</label>
+                <select id="image-provider" className="provider-select" data-testid="select-image-provider" value={provider} disabled={isGenerating} onChange={(event) => setProvider(event.target.value as ComicGenerationInputProvider)}>
+                  <option value="openai">ChatGPT — SFW</option>
+                  <option value="venice">Venice — Mature</option>
+                  <option value="auto">Automatic</option>
+                </select>
+              </div>
+              <p className="usage-note">{provider === 'auto' ? 'Automatic uses Venice for non-explicit mature themes and ChatGPT/OpenAI for ordinary content.' : provider === 'venice' ? 'Venice selected for mature, non-explicit themes such as profanity, horror, and non-graphic adult romance.' : 'ChatGPT/OpenAI selected for safe-for-work imagery.'} Explicit sexual content is not supported in either option.</p>
+              <p className="provider-status" data-testid="status-venice-connection">{providerStatus.data?.veniceMessage ?? (providerStatus.isError ? 'Could not check Venice connectivity.' : 'Checking Venice connectivity…')}</p>
+              <p className="usage-note">Choose 1–24 panels. Text preparation uses OpenAI; images use the chosen provider’s API balance. More panels cost more.</p>
               <div className="ref-note">
                 <span className="ref-symbol" aria-hidden="true"><FileText size={15} strokeWidth={1.6} /></span>
                 <div><strong>Reference style included</strong>Every frame follows the supplied black-and-white film-noir comic reference.</div>
@@ -188,7 +209,7 @@ function Home() {
             <div className="result-heading">
               <div>
                 <h2>Your comic</h2>
-                <p>{comic ? `${comic.panels.length} frames · generated from your text` : 'A new sequence is waiting to be made'}</p>
+                <p>{comic ? `${comic.panels.length} frames · ${comic.providerUsed === 'venice' ? 'Venice AI' : 'ChatGPT/OpenAI'} images` : 'A new sequence is waiting to be made'}</p>
               </div>
               <span className="section-label">02 / 02</span>
             </div>

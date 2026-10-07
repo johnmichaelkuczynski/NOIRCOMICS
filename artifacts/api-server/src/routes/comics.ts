@@ -1,8 +1,13 @@
 import { Router, type IRouter } from "express";
-import { GenerateComicBody, GenerateComicResponse } from "@workspace/api-zod";
+import { GenerateComicBody, GenerateComicResponse, GetComicProvidersResponse } from "@workspace/api-zod";
 import { createComic, ComicServiceError } from "../lib/comic-generator";
+import { getComicProviderStatus } from "../lib/comic-providers";
 
 const router: IRouter = Router();
+
+router.get("/comics/providers", async (_req, res): Promise<void> => {
+  res.json(GetComicProvidersResponse.parse(await getComicProviderStatus()));
+});
 
 router.post("/comics/generate", async (req, res): Promise<void> => {
   const input = GenerateComicBody.safeParse(req.body);

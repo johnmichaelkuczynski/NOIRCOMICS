@@ -5,8 +5,11 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ComicGenerationInputProvider } from './comicGenerationInputProvider';
 
 export interface ComicGenerationInput {
+  /** Image provider. Auto uses Venice for supported non-explicit mature themes. */
+  provider?: ComicGenerationInputProvider;
   /**
      * Source essay, story, or other short text.
      * @minLength 1

@@ -311,6 +311,9 @@ button { cursor: pointer; }
 .count-current { font:11px var(--app-font-mono); color:#a43b31; }
 .count-input { width:72px; padding:7px 8px; border:1px solid #b9b2a7; background:#f7f4ed; font:14px var(--app-font-mono); color:#292a2c; }
 .usage-note { font-size:11px; line-height:1.5; color:#66635d; margin:10px 0 0; }
+.provider-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; font-size:12px; font-weight:700; }
+.provider-select { max-width:160px; padding:7px 8px; border:1px solid #b9b2a7; background:#f7f4ed; color:#292a2c; font-size:12px; font-weight:400; }
+.provider-status { font-size:11px; line-height:1.5; color:#66635d; margin:8px 0 0; padding-left:8px; border-left:2px solid #ad4135; }
 .count-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:6px; }
 .count-btn { height:37px; border:1px solid #d2cbc0; background:#ebe7df; color:#5c5a56; font:12px var(--app-font-mono); transition:transform .18s,background .18s,color .18s,border-color .18s; }
 .count-btn:hover { transform:translateY(-2px); border-color:#a43b31; }

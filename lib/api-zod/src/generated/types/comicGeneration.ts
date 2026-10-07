@@ -5,9 +5,12 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ComicGenerationProviderUsed } from './comicGenerationProviderUsed';
 import type { ComicPanel } from './comicPanel';
 
 export interface ComicGeneration {
+  providerUsed: ComicGenerationProviderUsed;
+  imageModel: string;
   title: string;
   /**
      * @minItems 1
