@@ -309,6 +309,8 @@ button { cursor: pointer; }
 .panel-count-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:11px; }
 .count-title { font-size:12px; font-weight:700; }
 .count-current { font:11px var(--app-font-mono); color:#a43b31; }
+.count-input { width:72px; padding:7px 8px; border:1px solid #b9b2a7; background:#f7f4ed; font:14px var(--app-font-mono); color:#292a2c; }
+.usage-note { font-size:11px; line-height:1.5; color:#66635d; margin:10px 0 0; }
 .count-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:6px; }
 .count-btn { height:37px; border:1px solid #d2cbc0; background:#ebe7df; color:#5c5a56; font:12px var(--app-font-mono); transition:transform .18s,background .18s,color .18s,border-color .18s; }
 .count-btn:hover { transform:translateY(-2px); border-color:#a43b31; }
@@ -342,7 +344,10 @@ button { cursor: pointer; }
 .comic-title { font:700 clamp(25px,3vw,36px) var(--app-font-serif); margin:0 0 20px; }
 .comic-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
 .comic-card { background:#f7f4ed; border:1px solid #b9b2a7; padding:8px; box-shadow:4px 5px 0 rgba(65,59,49,.1); animation:rise .5s both; }
-.comic-image { width:100%; aspect-ratio:4/3; display:block; object-fit:cover; background:#242528; border:1px solid #302f2b; }
+.comic-art-frame { position:relative; border:2px solid #111; background:#111; }
+.comic-image { width:100%; aspect-ratio:2/3; display:block; object-fit:contain; background:#111; filter:grayscale(1); }
+.speech-balloon { position:absolute; top:4%; left:5%; width:90%; padding:15px 17px; border:2px solid #111; border-radius:44%; background:white; color:#080808; font:17px/1.22 Georgia,serif; text-align:center; overflow-wrap:anywhere; }
+.speech-balloon:after { content:""; position:absolute; left:23%; bottom:-19px; width:18px; height:28px; background:white; border-right:2px solid #111; border-bottom:2px solid #111; transform:skew(-25deg) rotate(24deg); clip-path:polygon(0 0,100% 0,100% 100%); }
 .comic-caption { padding:12px 8px 9px; }
 .caption-top { display:flex; align-items:center; gap:8px; margin-bottom:7px; color:#a43b31; font:9px var(--app-font-mono); letter-spacing:.13em; text-transform:uppercase; }
 .caption-top:after { content:""; height:1px; flex:1; background:#d7d0c4; }

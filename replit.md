@@ -1,15 +1,16 @@
-# [Project name]
+# Noir Comic Generator
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Converts a short essay or story into a selected number of black-and-white film-noir comic panels.
 
 ## Run & Operate
 
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/noir-comic-generator run dev` — run the web app through its managed workflow
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required secret: `OPENAI_API_KEY` — used only by the server, never exposed to the browser
 
 ## Stack
 
@@ -22,23 +23,33 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — API contract
+- `artifacts/api-server/src/lib/comic-generator.ts` — OpenAI text adaptation and reference-guided imagery
+- `artifacts/noir-comic-generator/src/App.tsx` — text import, panel count and comic rendering
+- `artifacts/noir-comic-generator/public/references/` — user-provided noir artwork used as the style reference
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Dialogue is typeset as real text in balloons over artwork, rather than asking the image model to draw lettering. **Why:** comic lettering must stay accurate and readable.
+- The first version has no accounts, saved-comics library, or database records. **Why:** the requested scope is a very simple text-to-panels app.
+- Uses the user's OpenAI API key, not a keyless AI proxy. **Why:** the user specifically requested the ChatGPT API key.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Paste text or import a `.txt` / `.md` file, up to 8,000 characters.
+- Choose 1–24 panels, with eight convenient presets and a numeric control.
+- Generate original photographic noir imagery guided by the supplied reference, with readable dialogue balloons.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- The user assumes short texts for now; short, information-dense writing may still need many panels.
+- Match the provided photographic black-and-white noir comic style, rather than a generic illustrated comic style.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Image generation uses the user's OpenAI API balance and may take several minutes.
+- Keep API credentials server-side and never log keys, source text, or image payloads.
+- Re-run API codegen after contract changes.
 
 ## Pointers
 

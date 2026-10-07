@@ -23,7 +23,7 @@ export const HealthCheckResponse = zod.object({
  */
 export const generateComicBodyTextMax = 8000;
 
-export const generateComicBodyPanelCountMax = 8;
+export const generateComicBodyPanelCountMax = 24;
 
 export const generateComicBodyStyleReferenceImageMax = 6000000;
 
@@ -36,7 +36,7 @@ export const GenerateComicBody = zod.object({
 })
 
 
-export const generateComicResponsePanelsMax = 8;
+export const generateComicResponsePanelsMax = 24;
 
 
 

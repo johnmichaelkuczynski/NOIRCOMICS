@@ -1,0 +1,1 @@
+- [Comic source fidelity](comic-source-fidelity.md) — preserve conceptual claims in the dialogue; lighter adaptations can change the source's motivation or logic.

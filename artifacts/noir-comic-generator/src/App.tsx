@@ -11,7 +11,7 @@ import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 const queryClient = new QueryClient();
 
 async function loadReferenceAsJpeg(): Promise<string> {
-  const response = await fetch('/references/film-noir-style.png');
+  const response = await fetch(`${import.meta.env.BASE_URL}references/film-noir-style.png`);
   if (!response.ok) throw new Error('Could not load the noir style reference. Please try again.');
   const bitmap = await createImageBitmap(await response.blob());
   const maxDimension = 1400;
@@ -31,9 +31,11 @@ function Home() {
   const [panelCount, setPanelCount] = useState(4);
   const [fileName, setFileName] = useState('');
   const [localError, setLocalError] = useState('');
+  const [preparing, setPreparing] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const mutation = useGenerateComic();
   const comic = mutation.data;
+  const isGenerating = preparing || mutation.isPending;
 
   async function readFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -61,6 +63,7 @@ function Home() {
 
   async function generate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isGenerating) return;
     setLocalError('');
     if (!text.trim()) {
       setLocalError('Add a story or essay before generating your comic.');
@@ -70,7 +73,12 @@ function Home() {
       setLocalError('Keep your source text under 8,000 characters.');
       return;
     }
+    if (!Number.isInteger(panelCount) || panelCount < 1 || panelCount > 24) {
+      setLocalError('Choose a whole number from 1 to 24 panels.');
+      return;
+    }
     try {
+      setPreparing(true);
       const styleReferenceImage = await loadReferenceAsJpeg();
       await mutation.mutateAsync({
         data: { text: text.trim(), panelCount, styleReferenceImage },
@@ -78,6 +86,8 @@ function Home() {
     } catch (error) {
       const detail = error instanceof Error ? error.message : '';
       setLocalError(detail || 'The comic could not be generated. Please try again.');
+    } finally {
+      setPreparing(false);
     }
   }
 
@@ -119,6 +129,7 @@ function Home() {
                 className="source-area"
                 data-testid="input-story-text"
                 value={text}
+                disabled={isGenerating}
                 onChange={(event) => {
                   setText(event.target.value);
                   setFileName('');
@@ -129,7 +140,7 @@ function Home() {
                 aria-describedby="source-foot"
               />
               <div className="source-foot" id="source-foot">
-                <button className="file-button" type="button" data-testid="button-upload-file" onClick={() => fileInput.current?.click()}>
+                <button className="file-button" type="button" disabled={isGenerating} data-testid="button-upload-file" onClick={() => fileInput.current?.click()}>
                   <Upload size={13} strokeWidth={1.8} />
                   {fileName ? fileName : 'Import .txt or .md'}
                 </button>
@@ -140,13 +151,14 @@ function Home() {
               <div className="divider-label">Frame the story</div>
               <div className="panel-count-row">
                 <span className="count-title">Number of panels</span>
-                <span className="count-current" data-testid="text-panel-count">{String(panelCount).padStart(2, '0')} PANELS</span>
+                <input className="count-input" aria-label="Number of panels, from 1 to 24" data-testid="input-panel-count" type="number" min={1} max={24} step={1} value={panelCount || ''} disabled={isGenerating} onChange={(event) => setPanelCount(Number(event.target.value))} />
               </div>
               <div className="count-grid" role="group" aria-label="Choose number of panels">
                 {Array.from({ length: 8 }, (_, index) => index + 1).map((count) => (
                   <button
                     key={count}
                     type="button"
+                    disabled={isGenerating}
                     className={`count-btn${panelCount === count ? ' selected' : ''}`}
                     aria-pressed={panelCount === count}
                     data-testid={`button-panel-count-${count}`}
@@ -156,12 +168,13 @@ function Home() {
                   </button>
                 ))}
               </div>
+              <p className="usage-note">Choose 1–24 panels. Each image uses your OpenAI API balance; more panels cost more.</p>
               <div className="ref-note">
                 <span className="ref-symbol" aria-hidden="true"><FileText size={15} strokeWidth={1.6} /></span>
                 <div><strong>Reference style included</strong>Every frame follows the supplied black-and-white film-noir comic reference.</div>
               </div>
-              <button className="generate-btn" type="submit" disabled={mutation.isPending || !text.trim()} data-testid="button-generate-comic">
-                {mutation.isPending ? (
+              <button className="generate-btn" type="submit" disabled={isGenerating || !text.trim()} data-testid="button-generate-comic">
+                {isGenerating ? (
                   <>Developing your panels <span className="loading-mark" aria-hidden="true" /></>
                 ) : (
                   <>Generate comic <ArrowUpRight size={15} strokeWidth={1.8} /></>
@@ -179,9 +192,9 @@ function Home() {
               </div>
               <span className="section-label">02 / 02</span>
             </div>
-            {mutation.isPending ? (
+            {isGenerating ? (
               <div className="loading-stage" data-testid="status-generation-loading">
-                <div className="loading-copy"><span className="loading-mark" /> In the darkroom — developing your story</div>
+                <div className="loading-copy"><span className="loading-mark" /> Generating your panels. This can take a few minutes.</div>
                 <div className="skeleton-grid">
                   {Array.from({ length: Math.min(panelCount, 4) }, (_, index) => (
                     <div className="skeleton-card" key={index} aria-hidden="true"><div className="skeleton-image" /><div className="skeleton-line" /></div>
@@ -194,11 +207,12 @@ function Home() {
                 <div className="comic-grid">
                   {comic.panels.map((panel, index) => (
                     <article className="comic-card" key={`${panel.index}-${index}`} data-testid={`card-comic-panel-${panel.index}`} style={{ animationDelay: `${index * 70}ms` }}>
-                      <img className="comic-image" src={panel.imageDataUri} alt={`Panel ${panel.index}: ${panel.visualDescription}`} data-testid={`img-comic-panel-${panel.index}`} />
+                      <div className="comic-art-frame">
+                        <img className="comic-image" src={panel.imageDataUri} alt={`Panel ${panel.index}: ${panel.visualDescription}`} data-testid={`img-comic-panel-${panel.index}`} />
+                        <div className="speech-balloon">{panel.dialogue}</div>
+                      </div>
                       <div className="comic-caption">
                         <div className="caption-top">Frame {String(panel.index).padStart(2, '0')}</div>
-                        <div className="visual-description">{panel.visualDescription}</div>
-                        {panel.dialogue && <div className="dialogue">{panel.dialogue}</div>}
                       </div>
                     </article>
                   ))}

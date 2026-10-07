@@ -11,7 +11,7 @@ export interface ComicGeneration {
   title: string;
   /**
      * @minItems 1
-     * @maxItems 8
+     * @maxItems 24
      */
   panels: ComicPanel[];
 }

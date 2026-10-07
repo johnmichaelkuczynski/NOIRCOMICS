@@ -18,7 +18,7 @@ export interface ComicGenerationInput {
   text: string;
   /**
      * @minimum 1
-     * @maximum 8
+     * @maximum 24
      */
   panelCount: number;
   /**
@@ -41,7 +41,7 @@ export interface ComicGeneration {
   title: string;
   /**
      * @minItems 1
-     * @maxItems 8
+     * @maxItems 24
      */
   panels: ComicPanel[];
 }
