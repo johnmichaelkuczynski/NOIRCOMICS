@@ -4,3 +4,4 @@
 - [Native toolchain compatibility](native-toolchain-compatibility.md) — this workspace has Nix and FHS runtimes; keep a native tool's interpreter and libc compatible.
 - [Google Play setup](google-play-setup.md) — the optional OAuth connector is not a prerequisite for an AAB; use RevenueCat's documented Play service-credential setup.
 - [Development preview privacy](development-preview-privacy.md) — documented private defaults are not proof of this workspace's current access settings.
+- [PC-only scope](pc-only-scope.md) — Android, billing and credential work is halted; do not resume without explicit user direction.
