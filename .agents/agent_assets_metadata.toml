@@ -84,3 +84,17 @@ mtime_ms = 1791987962513
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/f3d45cc1-a17f-4476-bb09-35fccf2216e3/6b738ab4-3739-4052-8892-c9115b2b85f5"
 storage_version_token = "1791988717558363"
 content_type = "image/png"
+
+[[outputs]]
+id = "0GTIX-FKPs-486P77aNZs"
+uri = "file://generated-artifacts/diagnostics/noir-publishing-validator-2026-10-14.txt"
+type = "text"
+title = "Publishing validator diagnostic evidence"
+description = "Read-only connectivity, lock, schema and deployment findings, including the successful DATABASE_URL connection. Contains no credential values."
+logical_id = "a6e64e2c-2a91-42b1-a94c-c5cbb390812c"
+content_hash = "sha256:ea1178dd8d9b8b9003d948c679d647742f7e0aeb08dc912094f3963618f7f4fc"
+size = 6684
+mtime_ms = 1791990882272
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/a6e64e2c-2a91-42b1-a94c-c5cbb390812c/1d5c2413-f804-402f-a45b-98ff8a232342"
+storage_version_token = "1791990907530682"
+content_type = "text/plain"
