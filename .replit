@@ -22,3 +22,10 @@ timeoutMs = 20000
 [nix]
 channel = "stable-25_05"
 packages = ["jdk17", "gradle", "patchelf"]
+
+[userenv]
+
+[userenv.shared]
+GOOGLE_PLAY_CLOUD_PROJECT_NUMBER = "111599664997"
+GOOGLE_PLAY_APP_SIGNING_SHA256 = "83:2C:5C:38:D8:0D:E0:DF:F7:D3:78:50:CF:5D:8E:05:8F:DD:A7:BF:A5:5E:1A:F0:23:6E:95:C5:55:F7:5E:E2"
+GOOGLE_PLAY_RTDN_SERVICE_ACCOUNT_EMAIL = "noir-comic-creator-billing@noir-comic-creator.iam.gserviceaccount.com"
