@@ -60,6 +60,15 @@ Converts a short essay or story into a selected number of black-and-white film-n
 - Deliver the Android `.aab` as a downloadable file. Do not publish or submit
   it to Google Play. **Why:** the user explicitly said they will upload it
   themselves and corrected explanations about publishing that delayed delivery.
+- Android monetization: free installation and limited free generation, then a
+  monthly subscription. The user suggested approximately 12 panels and/or one
+  or two screenplays, then approximately $4.95/month. Starting implementation
+  defaults are 12 panels and two script generations; each new script version
+  counts as a generation. These are provisional amounts, not a promise of
+  unlimited paid generation. **Why:** the user changed the release requirements.
+- Keep Noir's subscription catalog separate from other apps in the connected
+  RevenueCat account. Use Google Play for Android in-app subscriptions; do not
+  add Stripe or change the PC interface as part of the Android billing request.
 
 - The user assumes short texts for now; short, information-dense writing may still need many panels.
 - Match the provided photographic black-and-white noir comic style, rather than a generic illustrated comic style.

@@ -1,5 +1,19 @@
 # Noir Comic Generator — Android release
 
+## Monetization change pending
+
+The delivered version 1.0.0 does not contain usage limits or purchases and must
+not be released as the subscription build. The requested replacement is free
+to install, with an introductory allowance of approximately 12 panels and one
+or two screenplay generations, followed by approximately $4.95/month.
+The initial working defaults are 12 panels and two screenplay generations,
+including regenerated versions. Paid monthly generation allowances remain to
+be determined; do not advertise unlimited AI generation.
+
+RevenueCat is connected for subscription management. Google Play authorization
+and the Noir app's real store product configuration are still needed.
+Do not change any other app's existing RevenueCat catalog.
+
 This is a separate Android application; the approved PC interface and backend
 source are not changed by packaging it.
 
