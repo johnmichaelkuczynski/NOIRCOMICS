@@ -314,6 +314,23 @@ button { cursor: pointer; }
 .provider-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:18px; font-size:12px; font-weight:700; }
 .provider-select { max-width:160px; padding:7px 8px; border:1px solid #b9b2a7; background:#f7f4ed; color:#292a2c; font-size:12px; font-weight:400; }
 .provider-status { font-size:11px; line-height:1.5; color:#66635d; margin:8px 0 0; padding-left:8px; border-left:2px solid #ad4135; }
+.dictation-control { margin-top:16px; }
+.dictation-actions { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.voice-button,.script-write-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 13px; border:1px solid #ad4135; background:transparent; color:#8b3229; font-size:12px; }
+.voice-button.recording { background:#aa3d31; color:#fff8ed; }
+.voice-button:disabled,.script-write-button:disabled { opacity:.55; cursor:not-allowed; }
+.dictation-privacy { font-size:10px; color:#77736c; line-height:1.5; margin:6px 0 0; }
+.dictation-error { color:#852f27; }
+.idea-action { border-top:1px solid #ddd6ca; margin-top:18px; padding-top:18px; }
+.script-write-button { width:100%; font-weight:600; }
+.script-draft { background:#f5f2ea; border:1px solid #d0c9bd; padding:22px; margin-bottom:28px; scroll-margin-top:20px; }
+.script-draft h2 { font:700 28px/1.15 var(--app-font-serif); margin:10px 0; }
+.script-draft>p { font-size:12px; line-height:1.6; color:#66635d; }
+.script-label { display:block; font-size:12px; font-weight:700; margin:18px 0 9px; }
+.script-text { height:380px; font:13px/1.7 var(--app-font-mono); }
+.script-actions { display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; margin:12px 0 20px; }
+.script-actions>span { color:#77736c; font:10px var(--app-font-mono); }
+.script-writing { display:flex; gap:10px; align-items:center; padding:18px; border:1px solid #d0c9bd; margin-bottom:20px; font-size:12px; color:#66635d; }
 .count-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:6px; }
 .count-btn { height:37px; border:1px solid #d2cbc0; background:#ebe7df; color:#5c5a56; font:12px var(--app-font-mono); transition:transform .18s,background .18s,color .18s,border-color .18s; }
 .count-btn:hover { transform:translateY(-2px); border-color:#a43b31; }

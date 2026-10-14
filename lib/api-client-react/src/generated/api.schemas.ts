@@ -5,6 +5,53 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export interface StoryIdeaInput {
+  /**
+     * @minLength 1
+     * @maxLength 8000
+     */
+  idea: string;
+  /**
+     * @minimum 1
+     * @maximum 24
+     */
+  panelCount: number;
+}
+
+export interface ScriptDraft {
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  title: string;
+  /**
+     * @minLength 1
+     * @maxLength 8000
+     */
+  script: string;
+}
+
+/**
+ * A temporary audio recording, maximum 12 MB.
+ */
+export type AudioRecording = Blob;
+
+export type AudioTranscriptProvider = typeof AudioTranscriptProvider[keyof typeof AudioTranscriptProvider];
+
+
+export const AudioTranscriptProvider = {
+  assemblyai: 'assemblyai',
+} as const;
+
+export interface AudioTranscript {
+  provider: AudioTranscriptProvider;
+  /**
+     * @minLength 1
+     * @maxLength 8000
+     */
+  text: string;
+}
+
 export interface HealthStatus {
   status: string;
 }

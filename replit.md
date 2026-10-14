@@ -12,6 +12,7 @@ Converts a short essay or story into a selected number of black-and-white film-n
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required secret: `OPENAI_API_KEY` — used only by the server, never exposed to the browser
 - Required for Venice images: `VENICE_API_KEY` — collected through the secure Secrets form and used server-side only
+- Required for dictation: `ASSEMBLYAI_API_KEY` — used server-side only
 
 ## Stack
 
@@ -36,6 +37,8 @@ Converts a short essay or story into a selected number of black-and-white film-n
 - Uses the user's OpenAI API key, not a keyless AI proxy. **Why:** the user specifically requested the ChatGPT API key.
 - OpenAI prepares faithful dialogue for both image providers; Venice handles reference-guided images when selected. **Why:** retain the established text-adaptation quality while offering a second image provider.
 - Automatic routing sends supported non-explicit mature themes to Venice and ordinary content to OpenAI. Explicit sexual content is rejected before adaptation or image requests; Venice safe mode stays enabled. **Why:** the integration's agreed scope is non-explicit content, not a pornography mode or safety bypass.
+- Dictation uses AssemblyAI, not OpenAI transcription or browser-only speech recognition. **Why:** the user explicitly chose AssemblyAI and wants voice entry suitable for an eventual phone app.
+- Developing an idea into a new script is a separate action from faithfully adapting existing writing into comic panels. Script-only generation never requests images. **Why:** the user wants to review a script and independently choose whether to make comics.
 
 ## Product
 
@@ -44,6 +47,8 @@ Converts a short essay or story into a selected number of black-and-white film-n
 - Generate original photographic noir imagery guided by the supplied reference, with readable dialogue balloons.
 - Choose “ChatGPT — SFW” (the default) or “Venice — Mature” (non-explicit themes); Automatic routing remains available. See the actual image provider used in the result.
 - Venice connectivity is checked against its authenticated rate-limit/access endpoint and model catalog. No credentials or balances are returned to the browser.
+- Dictate into the existing input, stop to transcribe, edit the words, and retry failed transcription without recording again. Recordings are capped at five minutes/12 MB and held temporarily, not saved by this app.
+- Develop an arbitrary story idea into an editable, downloadable script. The original idea remains intact; a separate button generates comics from the edited script using the selected panel count and provider.
 
 ## User preferences
 
@@ -57,6 +62,7 @@ Converts a short essay or story into a selected number of black-and-white film-n
 - Keep API credentials server-side and never log keys, source text, or image payloads.
 - Re-run API codegen after contract changes.
 - Venice's model catalog can be read publicly, so it is not proof that a key works. Verify credentials with the authenticated access/rate-limit endpoint as well.
+- Binary OpenAPI request bodies generate Blob types; the shared Zod package needs DOM type definitions for these contracts, even though its runtime also runs on Node.
 
 ## Pointers
 

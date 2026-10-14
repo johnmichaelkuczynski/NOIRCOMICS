@@ -7,6 +7,9 @@
  */
 
 export * from './apiError';
+export * from './audioRecording';
+export * from './audioTranscript';
+export * from './audioTranscriptProvider';
 export * from './comicGeneration';
 export * from './comicGenerationInput';
 export * from './comicGenerationInputProvider';
@@ -14,3 +17,5 @@ export * from './comicGenerationProviderUsed';
 export * from './comicPanel';
 export * from './comicProviders';
 export * from './healthStatus';
+export * from './scriptDraft';
+export * from './storyIdeaInput';

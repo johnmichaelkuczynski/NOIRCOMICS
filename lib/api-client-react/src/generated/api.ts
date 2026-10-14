@@ -21,10 +21,13 @@ import type {
 
 import type {
   ApiError,
+  AudioTranscript,
   ComicGeneration,
   ComicGenerationInput,
   ComicProviders,
-  HealthStatus
+  HealthStatus,
+  ScriptDraft,
+  StoryIdeaInput
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -53,6 +56,182 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getWriteComicScriptUrl = () => {
+
+
+
+
+  return `/api/comics/script`
+}
+
+/**
+ * @summary Develop a story idea into an editable script without generating images
+ */
+export const writeComicScript = async (storyIdeaInput: StoryIdeaInput, options?: Parameters<typeof customFetch>[1]): Promise<ScriptDraft> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<ScriptDraft>(getWriteComicScriptUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(storyIdeaInput)
+  }
+);}
+
+
+
+
+
+export const getWriteComicScriptMutationKey = () => ['writeComicScript'] as const;
+
+export const getWriteComicScriptMutationOptions = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof writeComicScript>>, TError,WriteComicScriptMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof writeComicScript>>, TError,WriteComicScriptMutationVariables, TContext> => {
+
+const mutationKey = getWriteComicScriptMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof writeComicScript>>, WriteComicScriptMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  writeComicScript(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WriteComicScriptMutationResult = NonNullable<Awaited<ReturnType<typeof writeComicScript>>>
+    export type WriteComicScriptMutationBody = BodyType<StoryIdeaInput>
+    export type WriteComicScriptMutationError = ErrorType<ApiError>
+    export type WriteComicScriptMutationVariables = {data: BodyType<StoryIdeaInput>}
+
+    /**
+ * @summary Develop a story idea into an editable script without generating images
+ */
+export const useWriteComicScript = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof writeComicScript>>, TError,WriteComicScriptMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof writeComicScript>>,
+        TError,
+        WriteComicScriptMutationVariables,
+        TContext
+      > => {
+      return useMutation(getWriteComicScriptMutationOptions(options));
+    }
+
+export const getTranscribeComicAudioUrl = () => {
+
+
+
+
+  return `/api/comics/transcribe`
+}
+
+/**
+ * @summary Use AssemblyAI to transcribe a temporary microphone recording into input text
+ */
+export const transcribeComicAudio = async (transcribeComicAudioBody: Blob, options?: Parameters<typeof customFetch>[1]): Promise<AudioTranscript> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<AudioTranscript>(getTranscribeComicAudioUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'audio/webm', ...getHeaders(options?.headers) },
+    body: transcribeComicAudioBody
+  }
+);}
+
+
+
+
+
+export const getTranscribeComicAudioMutationKey = () => ['transcribeComicAudio'] as const;
+
+export const getTranscribeComicAudioMutationOptions = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof transcribeComicAudio>>, TError,TranscribeComicAudioMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof transcribeComicAudio>>, TError,TranscribeComicAudioMutationVariables, TContext> => {
+
+const mutationKey = getTranscribeComicAudioMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof transcribeComicAudio>>, TranscribeComicAudioMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  transcribeComicAudio(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TranscribeComicAudioMutationResult = NonNullable<Awaited<ReturnType<typeof transcribeComicAudio>>>
+    export type TranscribeComicAudioMutationBody = BodyType<Blob>
+    export type TranscribeComicAudioMutationError = ErrorType<ApiError>
+    export type TranscribeComicAudioMutationVariables = {data: BodyType<Blob>}
+
+    /**
+ * @summary Use AssemblyAI to transcribe a temporary microphone recording into input text
+ */
+export const useTranscribeComicAudio = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof transcribeComicAudio>>, TError,TranscribeComicAudioMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof transcribeComicAudio>>,
+        TError,
+        TranscribeComicAudioMutationVariables,
+        TContext
+      > => {
+      return useMutation(getTranscribeComicAudioMutationOptions(options));
+    }
 
 export const getGetComicProvidersUrl = () => {
 

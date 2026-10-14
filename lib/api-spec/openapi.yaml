@@ -13,6 +13,102 @@ tags:
   - name: comics
     description: Comic generation
 paths:
+  /comics/script:
+    post:
+      operationId: writeComicScript
+      tags: [comics]
+      summary: Develop a story idea into an editable script without generating images
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoryIdeaInput"
+      responses:
+        "200":
+          description: An original script developed from the idea
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScriptDraft"
+        "400":
+          description: Invalid or unsupported idea
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Script writing failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /comics/transcribe:
+    post:
+      operationId: transcribeComicAudio
+      tags: [comics]
+      summary: Use AssemblyAI to transcribe a temporary microphone recording into input text
+      requestBody:
+        required: true
+        content:
+          audio/webm:
+            schema:
+              $ref: "#/components/schemas/AudioRecording"
+          audio/mp4:
+            schema:
+              $ref: "#/components/schemas/AudioRecording"
+          audio/wav:
+            schema:
+              $ref: "#/components/schemas/AudioRecording"
+          audio/mpeg:
+            schema:
+              $ref: "#/components/schemas/AudioRecording"
+          audio/ogg:
+            schema:
+              $ref: "#/components/schemas/AudioRecording"
+          audio/aac:
+            schema:
+              $ref: "#/components/schemas/AudioRecording"
+          audio/x-wav:
+            schema:
+              $ref: "#/components/schemas/AudioRecording"
+          video/webm:
+            schema:
+              $ref: "#/components/schemas/AudioRecording"
+          video/mp4:
+            schema:
+              $ref: "#/components/schemas/AudioRecording"
+      responses:
+        "200":
+          description: The dictated text; audio is not persisted by this app
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AudioTranscript"
+        "400":
+          description: Invalid recording or no speech
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "413":
+          description: Recording exceeds the 12 MB limit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "415":
+          description: Unsupported recording format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Transcription failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
   /comics/providers:
     get:
       operationId: getComicProviders
@@ -71,6 +167,45 @@ paths:
                 $ref: "#/components/schemas/ApiError"
 components:
   schemas:
+    StoryIdeaInput:
+      type: object
+      properties:
+        idea:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        panelCount:
+          type: integer
+          minimum: 1
+          maximum: 24
+      required: [idea, panelCount]
+    ScriptDraft:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 160
+        script:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required: [title, script]
+    AudioRecording:
+      type: string
+      format: binary
+      description: A temporary audio recording, maximum 12 MB.
+    AudioTranscript:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [assemblyai]
+        text:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required: [text, provider]
     HealthStatus:
       type: object
       properties:

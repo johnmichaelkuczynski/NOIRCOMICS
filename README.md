@@ -13,6 +13,8 @@ Noir Comic Generator turns your writing into a sequence of atmospheric comic pan
 
 You bring the words. Choose how many frames you want. Let your story take shape.
 
+Have only an idea? Describe it and let the app develop an original script. Read it, edit it, and download it as writing—or choose to turn it into comics.
+
 ## Big atmosphere. Your original meaning.
 
 **Cinematic imagery**  
@@ -23,6 +25,12 @@ Clean speech balloons sit outside the photographs, keeping dialogue clear and fa
 
 **A frame count that fits your story**  
 Choose anywhere from 1 to 24 panels, whether you want a single moment or a longer sequence.
+
+**Speak instead of typing**  
+Dictate your script or idea. AssemblyAI adds your words to the input when you stop, ready for you to edit.
+
+**An idea is enough**  
+Start with a premise and get an editable script with scenes, action, and dialogue. Making comics afterward is your choice, not a requirement.
 
 **More than fiction**  
 Bring a short story, an essay, a philosophical argument, or a conversation. The experience is designed to keep your original meaning at the center.
@@ -48,14 +56,14 @@ Mature does not mean explicit. Explicit sexual content and graphic gore are not 
 
 ## From writing to comic in three steps
 
-**1. Bring your words.**  
-Paste your writing or import a text file.
+**1. Bring your words—or your idea.**  
+Type, paste, import a text file, or dictate.
 
-**2. Choose your frames.**  
-Pick your panel count and preferred image option.
+**2. Make it your story.**  
+Already have a script? Use it directly. Have only an idea? Choose “Write script from idea,” then review, edit, or download the result.
 
-**3. Generate your comic.**  
-See your writing become a sequence of noir scenes with readable dialogue.
+**3. Make comics if you want them.**  
+Choose your frame count and image option. Generate from your own writing, or turn your edited script into noir scenes with readable dialogue.
 
 ## Made for people with something to say
 

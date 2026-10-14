@@ -1,6 +1,9 @@
-import { useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
-import { getGetComicProvidersQueryKey, useGenerateComic, useGetComicProviders, type ComicGenerationInputProvider } from '@workspace/api-client-react';
-import { ArrowUpRight, FileText, Upload } from 'lucide-react';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
+import { getGetComicProvidersQueryKey, useGenerateComic, useGetComicProviders, useWriteComicScript, type ComicGenerationInputProvider, type ScriptDraft as Draft } from '@workspace/api-client-react';
+import { ArrowUpRight, FileText, Upload, PenLine } from 'lucide-react';
+import { DictationControl } from '@/components/dictation-control';
+import { ScriptDraft } from '@/components/script-draft';
+import { errorMessage as getErrorMessage } from '@/lib/error-message';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -33,14 +36,22 @@ function Home() {
   const [fileName, setFileName] = useState('');
   const [localError, setLocalError] = useState('');
   const [preparing, setPreparing] = useState(false);
+  const [dictating, setDictating] = useState(false);
+  const [draft, setDraft] = useState<Draft | null>(null);
+  const draftRef = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const mutation = useGenerateComic();
+  const scriptMutation = useWriteComicScript();
   const comic = mutation.data;
   const isGenerating = preparing || mutation.isPending;
+  const isBusy = isGenerating || scriptMutation.isPending || dictating;
+  useEffect(() => {
+    if (scriptMutation.data) draftRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [scriptMutation.data]);
   const providerStatus = useGetComicProviders({
     query: {
       queryKey: getGetComicProvidersQueryKey(),
-      enabled: !isGenerating,
+      enabled: !isBusy,
       staleTime: 60_000,
       refetchInterval: 60_000,
       refetchOnWindowFocus: false,
@@ -74,13 +85,17 @@ function Home() {
 
   async function generate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (isGenerating) return;
+    await generateFromText(text);
+  }
+
+  async function generateFromText(source: string) {
+    if (isBusy) return;
     setLocalError('');
-    if (!text.trim()) {
+    if (!source.trim()) {
       setLocalError('Add a story or essay before generating your comic.');
       return;
     }
-    if (text.length > 8000) {
+    if (source.length > 8000) {
       setLocalError('Keep your source text under 8,000 characters.');
       return;
     }
@@ -92,14 +107,35 @@ function Home() {
       setPreparing(true);
       const styleReferenceImage = await loadReferenceAsJpeg();
       await mutation.mutateAsync({
-        data: { text: text.trim(), panelCount, styleReferenceImage, provider },
+        data: { text: source.trim(), panelCount, styleReferenceImage, provider },
       });
     } catch (error) {
-      const detail = error instanceof Error ? error.message : '';
-      setLocalError(detail || 'The comic could not be generated. Please try again.');
+      setLocalError(getErrorMessage(error, 'The comic could not be generated. Please try again.'));
     } finally {
       setPreparing(false);
     }
+  }
+
+  async function writeFromIdea() {
+    if (isBusy || !text.trim()) return;
+    setLocalError('');
+    if (text.length > 8000 || !Number.isInteger(panelCount) || panelCount < 1 || panelCount > 24) {
+      setLocalError('Use up to 8,000 characters and choose a whole number from 1 to 24 panels.');
+      return;
+    }
+    try {
+      setDraft(await scriptMutation.mutateAsync({ data: { idea: text.trim(), panelCount } }));
+    } catch (error) {
+      setLocalError(getErrorMessage(error, 'The script could not be written. Your original idea is unchanged.'));
+    }
+  }
+
+  function appendDictation(transcript: string) {
+    const combined = text ? `${text}${/\s$/.test(text) ? '' : '\n'}${transcript}` : transcript;
+    if (combined.length > 8000) throw new Error('This dictation would exceed 8,000 characters. Shorten the existing input, then retry transcription. Your recording is kept on this page.');
+    setText(combined);
+    setFileName('');
+    setLocalError('');
   }
 
   const errorMessage = localError || (mutation.isError ? 'The comic could not be generated. Please try again.' : '');
@@ -119,7 +155,7 @@ function Home() {
           <div>
             <div className="eyebrow">From page to panel</div>
             <h1>Give your story<br />the noir treatment.</h1>
-            <p>Turn a short piece of writing into a cinematic black-and-white comic. Your words stay at the heart of every frame.</p>
+            <p>Type, import, or dictate your writing. Have only an idea? Develop it into a script, then choose whether to give it the noir treatment.</p>
           </div>
           <div className="issue-stamp">The writer’s room<br />No. 001 / Original</div>
         </section>
@@ -132,7 +168,7 @@ function Home() {
             </div>
             <div className="editor-body">
               <div className="field-title">
-                <label htmlFor="story-text">Story or essay</label>
+                <label htmlFor="story-text">Writing or story idea</label>
                 <span>UP TO 8,000 CHARACTERS</span>
               </div>
               <textarea
@@ -140,36 +176,43 @@ function Home() {
                 className="source-area"
                 data-testid="input-story-text"
                 value={text}
-                disabled={isGenerating}
+                disabled={isBusy}
                 onChange={(event) => {
                   setText(event.target.value);
                   setFileName('');
                   if (localError) setLocalError('');
                 }}
-                placeholder="Paste a compact story, scene, or essay here. The generator will preserve its meaning as it finds the frames..."
+                placeholder="Paste or dictate your writing, or describe an idea—for example, a man who can read minds and uses his power for insider trading..."
                 maxLength={8000}
                 aria-describedby="source-foot"
               />
               <div className="source-foot" id="source-foot">
-                <button className="file-button" type="button" disabled={isGenerating} data-testid="button-upload-file" onClick={() => fileInput.current?.click()}>
+                <button className="file-button" type="button" disabled={isBusy} data-testid="button-upload-file" onClick={() => fileInput.current?.click()}>
                   <Upload size={13} strokeWidth={1.8} />
                   {fileName ? fileName : 'Import .txt or .md'}
                 </button>
                 <span data-testid="text-character-count">{text.length.toLocaleString()} / 8,000</span>
               </div>
               <input ref={fileInput} className="upload-input" data-testid="input-story-file" type="file" accept=".txt,.md,text/plain,text/markdown" onChange={readFile} />
+              <DictationControl disabled={isGenerating || scriptMutation.isPending} onBusyChange={setDictating} onTranscript={appendDictation} />
+              <div className="idea-action">
+                <button type="button" className="script-write-button" data-testid="button-write-script" disabled={isBusy || !text.trim()} onClick={writeFromIdea}>
+                  <PenLine size={15} /> {scriptMutation.isPending ? 'Writing your script…' : 'Write script from idea'}
+                </button>
+                <p className="usage-note">Develop your idea into an editable script. Making comics afterward is optional.</p>
+              </div>
 
               <div className="divider-label">Frame the story</div>
               <div className="panel-count-row">
                 <span className="count-title">Number of panels</span>
-                <input className="count-input" aria-label="Number of panels, from 1 to 24" data-testid="input-panel-count" type="number" min={1} max={24} step={1} value={panelCount || ''} disabled={isGenerating} onChange={(event) => setPanelCount(Number(event.target.value))} />
+                <input className="count-input" aria-label="Number of panels, from 1 to 24" data-testid="input-panel-count" type="number" min={1} max={24} step={1} value={panelCount || ''} disabled={isBusy} onChange={(event) => setPanelCount(Number(event.target.value))} />
               </div>
               <div className="count-grid" role="group" aria-label="Choose number of panels">
                 {Array.from({ length: 8 }, (_, index) => index + 1).map((count) => (
                   <button
                     key={count}
                     type="button"
-                    disabled={isGenerating}
+                    disabled={isBusy}
                     className={`count-btn${panelCount === count ? ' selected' : ''}`}
                     aria-pressed={panelCount === count}
                     data-testid={`button-panel-count-${count}`}
@@ -181,7 +224,7 @@ function Home() {
               </div>
               <div className="provider-row">
                 <label htmlFor="image-provider">Image provider</label>
-                <select id="image-provider" className="provider-select" data-testid="select-image-provider" value={provider} disabled={isGenerating} onChange={(event) => setProvider(event.target.value as ComicGenerationInputProvider)}>
+                <select id="image-provider" className="provider-select" data-testid="select-image-provider" value={provider} disabled={isBusy} onChange={(event) => setProvider(event.target.value as ComicGenerationInputProvider)}>
                   <option value="openai">ChatGPT — SFW</option>
                   <option value="venice">Venice — Mature</option>
                   <option value="auto">Automatic</option>
@@ -189,12 +232,12 @@ function Home() {
               </div>
               <p className="usage-note">{provider === 'auto' ? 'Automatic uses Venice for non-explicit mature themes and ChatGPT/OpenAI for ordinary content.' : provider === 'venice' ? 'Venice selected for mature, non-explicit themes such as profanity, horror, and non-graphic adult romance.' : 'ChatGPT/OpenAI selected for safe-for-work imagery.'} Explicit sexual content is not supported in either option.</p>
               <p className="provider-status" data-testid="status-venice-connection">{providerStatus.data?.veniceMessage ?? (providerStatus.isError ? 'Could not check Venice connectivity.' : 'Checking Venice connectivity…')}</p>
-              <p className="usage-note">Choose 1–24 panels. Text preparation uses OpenAI; images use the chosen provider’s API balance. More panels cost more.</p>
+              <p className="usage-note">Choose 1–24 panels. Script writing uses OpenAI; dictation uses AssemblyAI; images use the chosen provider’s balance. More panels cost more.</p>
               <div className="ref-note">
                 <span className="ref-symbol" aria-hidden="true"><FileText size={15} strokeWidth={1.6} /></span>
                 <div><strong>Reference style included</strong>Every frame follows the supplied black-and-white film-noir comic reference.</div>
               </div>
-              <button className="generate-btn" type="submit" disabled={isGenerating || !text.trim()} data-testid="button-generate-comic">
+              <button className="generate-btn" type="submit" disabled={isBusy || !text.trim()} data-testid="button-generate-comic">
                 {isGenerating ? (
                   <>Developing your panels <span className="loading-mark" aria-hidden="true" /></>
                 ) : (
@@ -206,6 +249,8 @@ function Home() {
           </form>
 
           <section className="result-area" aria-live="polite">
+            {scriptMutation.isPending && <div className="script-writing" role="status" data-testid="status-script-writing"><span className="loading-mark" /> Developing your idea into a complete script. No images are being generated.</div>}
+            {draft && <div ref={draftRef}><ScriptDraft draft={draft} disabled={isBusy} onChange={script => setDraft(previous => previous ? { ...previous, script } : previous)} onGenerate={() => { void generateFromText(draft.script); }} /></div>}
             <div className="result-heading">
               <div>
                 <h2>Your comic</h2>

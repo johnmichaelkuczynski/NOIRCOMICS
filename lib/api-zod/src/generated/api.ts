@@ -9,6 +9,45 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Develop a story idea into an editable script without generating images
+ */
+export const writeComicScriptBodyIdeaMax = 8000;
+
+export const writeComicScriptBodyPanelCountMax = 24;
+
+
+
+export const WriteComicScriptBody = zod.object({
+  "idea": zod.string().min(1).max(writeComicScriptBodyIdeaMax),
+  "panelCount": zod.number().int().min(1).max(writeComicScriptBodyPanelCountMax)
+})
+
+export const writeComicScriptResponseTitleMax = 160;
+
+export const writeComicScriptResponseScriptMax = 8000;
+
+
+
+export const WriteComicScriptResponse = zod.object({
+  "title": zod.string().min(1).max(writeComicScriptResponseTitleMax),
+  "script": zod.string().min(1).max(writeComicScriptResponseScriptMax)
+})
+
+
+/**
+ * @summary Use AssemblyAI to transcribe a temporary microphone recording into input text
+ */
+export const transcribeComicAudioResponseTextMax = 8000;
+
+
+
+export const TranscribeComicAudioResponse = zod.object({
+  "provider": zod.enum(['assemblyai']),
+  "text": zod.string().min(1).max(transcribeComicAudioResponseTextMax)
+})
+
+
+/**
  * @summary Check comic provider configuration and Venice connectivity
  */
 export const GetComicProvidersResponse = zod.object({
