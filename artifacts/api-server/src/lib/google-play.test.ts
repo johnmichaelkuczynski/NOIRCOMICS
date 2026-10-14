@@ -114,8 +114,8 @@ test("existing paid subscriptions can be restored after new subscriptions are di
   await assert.rejects(verifier.catalog(), { status: 503 });
 });
 function integrity() {
-  return { requestDetails: { requestPackageName: "ink.noircomics.app", requestHash: "fixture-hash", timestampMillis: String(Date.now()) },
-    appIntegrity: { packageName: "ink.noircomics.app", appRecognitionVerdict: "PLAY_RECOGNIZED", versionCode: "4", certificateSha256Digest: ["fixture-cert"] },
+  return { requestDetails: { requestPackageName: "nk.noircomicgen2.app", requestHash: "fixture-hash", timestampMillis: String(Date.now()) },
+    appIntegrity: { packageName: "nk.noircomicgen2.app", appRecognitionVerdict: "PLAY_RECOGNIZED", versionCode: "4", certificateSha256Digest: ["fixture-cert"] },
     deviceIntegrity: { deviceRecognitionVerdict: ["MEETS_DEVICE_INTEGRITY"] },
     accountDetails: { appLicensingVerdict: "LICENSED" } };
 }

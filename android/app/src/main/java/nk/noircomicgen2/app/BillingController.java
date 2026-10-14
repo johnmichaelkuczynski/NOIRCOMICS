@@ -1,4 +1,4 @@
-package ink.noircomics.app;
+package nk.noircomicgen2.app;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -54,7 +54,7 @@ public final class BillingController {
             String id = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
             if (id == null || id.isEmpty()) return "";
             byte[] digest = MessageDigest.getInstance("SHA-256")
-                .digest(("ink.noircomics.app:" + id).getBytes(StandardCharsets.UTF_8));
+                .digest(("nk.noircomicgen2.app:" + id).getBytes(StandardCharsets.UTF_8));
             StringBuilder encoded = new StringBuilder();
             for (byte value : digest) encoded.append(String.format(Locale.ROOT, "%02x", value & 0xff));
             return encoded.toString();
@@ -252,7 +252,7 @@ public final class BillingController {
         activity.runOnUiThread(() -> {
             try {
                 activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(
-                    "https://play.google.com/store/account/subscriptions?sku=noir_monthly_v1&package=ink.noircomics.app")));
+                    "https://play.google.com/store/account/subscriptions?sku=noir_monthly_v1&package=nk.noircomicgen2.app")));
             } catch (Exception error) { notifyState("unavailable", "Open Google Play to manage your subscription.", ""); }
         });
     }

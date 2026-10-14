@@ -1,4 +1,4 @@
-# Noir Comic Generator — Android release
+# NOIR COMIC CREATOR DELUXE — Android release
 
 ## Version 1.3.1 — internal-testing build; activation still pending
 
@@ -43,8 +43,8 @@ The Android app bundles a production build of the approved PC interface, loads
 it in an HTTPS-origin Android WebView, and calls the published server. OpenAI,
 AssemblyAI and Venice credentials stay exclusively on the server.
 
-- Android package: `ink.noircomics.app`
-- Version: `1.3.1` / version code `5`
+- Android package: `nk.noircomicgen2.app`
+- Version: `1.3.1` / version code `1`
 - Minimum Android: 10 (API 29)
 - Target and compile Android: 16 (API 36)
 - Recording permission: microphone only, requested when dictation is used
@@ -81,7 +81,7 @@ Run Gradle from this directory with:
 `gradle :app:bundleRelease -PappOrigin=https://noircomics.ink`
 
 Then run `node android/tools/sign-bundle.mjs` from the workspace root. The
-result is `generated-artifacts/android/noir-comic-generator-android-1.3.1.aab`.
+result is `generated-artifacts/android/noir-comic-creator-deluxe-vc1.aab`.
 
 Provide the SDK through `ANDROID_HOME`. A local `aapt2` may be selected using
 `-Pandroid.aapt2FromMavenOverride=/path/to/aapt2`. This workspace provides an

@@ -3,7 +3,7 @@ import { GoogleAuth, OAuth2Client } from "google-auth-library";
 import { pool } from "@workspace/db";
 import { ComicServiceError } from "./comic-providers";
 
-export const PLAY_PACKAGE = "ink.noircomics.app";
+export const PLAY_PACKAGE = "nk.noircomicgen2.app";
 export const PLAY_PRODUCT = "noir_monthly_v1";
 export const PLAY_PLAN = "monthly";
 export const PLAY_AUDIENCE = "https://noircomics.ink/api/billing/google-play/notifications";

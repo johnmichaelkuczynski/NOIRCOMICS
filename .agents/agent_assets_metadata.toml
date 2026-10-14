@@ -140,3 +140,17 @@ mtime_ms = 1791999924408
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/218800ff-85d4-4406-ba6f-dce8c16e79ea/278bf6f3-259b-4a07-a287-c0d01d90fff9"
 storage_version_token = "1792000042402285"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "nsYADN8Mfoxvj-gLoDR9U"
+uri = "file://generated-artifacts/android/noir-comic-creator-deluxe-vc1.aab"
+type = "unspecified"
+title = "DOWNLOAD — NOIR COMIC CREATOR DELUXE AAB"
+description = "Package nk.noircomicgen2.app; versionCode 1. Signed with the existing upload key. Verified directly from the finished bundle using bundletool."
+logical_id = "a19934a9-eaf5-42c1-b1ae-0a6717dd08cb"
+content_hash = "sha256:b918debd7bdc8705a193259474a794165065f573adb7ace8f4001d47f26f79d5"
+size = 6668984
+mtime_ms = 1792002059555
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/a19934a9-eaf5-42c1-b1ae-0a6717dd08cb/79a38ebf-f640-4af6-a122-0a3d4bb3685c"
+storage_version_token = "1792002095091879"
+content_type = "application/octet-stream"

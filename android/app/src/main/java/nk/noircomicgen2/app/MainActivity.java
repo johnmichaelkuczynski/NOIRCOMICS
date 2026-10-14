@@ -1,4 +1,4 @@
-package ink.noircomics.app;
+package nk.noircomicgen2.app;
 
 import android.Manifest;
 import android.annotation.SuppressLint;

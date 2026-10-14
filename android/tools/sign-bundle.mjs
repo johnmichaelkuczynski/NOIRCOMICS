@@ -9,7 +9,7 @@ const keyDirectory = resolve(workspace, '.android-signing');
 const keyPath = resolve(keyDirectory, 'noir-upload.p12');
 const configurationPath = resolve(keyDirectory, 'key-config.json');
 const source = resolve(process.argv[2] || resolve(workspace, 'android/app/build/outputs/bundle/release/app-release.aab'));
-const destination = resolve(process.argv[3] || resolve(workspace, 'generated-artifacts/android/noir-comic-generator-android-1.3.1.aab'));
+const destination = resolve(process.argv[3] || resolve(workspace, 'generated-artifacts/android/noir-comic-creator-deluxe-vc1.aab'));
 const alias = 'noir-upload';
 const context = 'noircomics/android-upload-keystore/v1';
 
@@ -53,7 +53,7 @@ if (!existsSync(keyPath)) {
   ]);
   chmodSync(keyPath, 0o600);
   writeFileSync(configurationPath, JSON.stringify({
-    alias, passwordSource: sourceName, applicationId: 'ink.noircomics.app',
+    alias, passwordSource: sourceName, applicationId: 'nk.noircomicgen2.app',
     warning: 'Retain this private key and its protected password source for future releases. Re-encrypt before rotating the password source.',
   }, null, 2), { mode: 0o600 });
 }
@@ -64,4 +64,4 @@ run('jarsigner', [
 ]);
 const verification = run('jarsigner', ['-verify', destination]);
 if (!verification.includes('jar verified.')) throw new Error('Android bundle signature verification failed.');
-console.log(JSON.stringify({ signedBundle: destination, signatureVerified: true, applicationId: 'ink.noircomics.app' }));
+console.log(JSON.stringify({ signedBundle: destination, signatureVerified: true, applicationId: 'nk.noircomicgen2.app' }));
