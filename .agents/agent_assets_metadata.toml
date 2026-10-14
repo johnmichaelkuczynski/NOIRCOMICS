@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "62CPvQcWZK_YwN4F8UJgi"
+uri = "file://generated-artifacts/android/noir-comic-generator-android-1.0.0.aab"
+type = "unspecified"
+title = "Noir Comic Generator — Android .AAB"
+description = "Download the signed Android App Bundle, version 1.0.0 (2.7 MB). Package: ink.noircomics.app. Targets Android 16 and supports Android 10+. Signature and Google bundle validation passed. PC app unchanged; not submitted to Google Play. The latest backend must be published for dictation and script-writing features."
+logical_id = "1b08c0e7-b745-4c20-979c-fea4e3862d88"
+content_hash = "sha256:ea0599a20f5b65c88fa9744af5580742b83a0ade89e8763afb09d337be7f1fa5"
+size = 2746836
+mtime_ms = 1791973961569
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/1b08c0e7-b745-4c20-979c-fea4e3862d88/53e8b211-d6dc-4638-9b82-ee87c8f019ca"
+storage_version_token = "1791974093187841"
+content_type = "application/octet-stream"

@@ -1,3 +1,4 @@
 - [Comic source fidelity](comic-source-fidelity.md) — preserve conceptual claims in the dialogue; lighter adaptations can change the source's motivation or logic.
 - [Venice moderation limits](venice-moderation-limits.md) — authenticated Venice access does not guarantee acceptance of non-explicit swimwear scenes.
 - [Phone-app direction](phone-app-direction.md) — dictation is important because the user eventually wants a phone version with spoken script entry.
+- [Native toolchain compatibility](native-toolchain-compatibility.md) — this workspace has Nix and FHS runtimes; keep a native tool's interpreter and libc compatible.

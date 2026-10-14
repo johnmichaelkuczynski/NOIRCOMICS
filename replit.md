@@ -54,6 +54,13 @@ Converts a short essay or story into a selected number of black-and-white film-n
 
 ## User preferences
 
+- Keep the approved PC app unchanged while creating a separate Android version.
+  **Why:** the user explicitly approved the PC version and requested an Android
+  companion as a Google Play `.aab`, not a replacement desktop interface.
+- Deliver the Android `.aab` as a downloadable file. Do not publish or submit
+  it to Google Play. **Why:** the user explicitly said they will upload it
+  themselves and corrected explanations about publishing that delayed delivery.
+
 - The user assumes short texts for now; short, information-dense writing may still need many panels.
 - Match the provided photographic black-and-white noir comic style, rather than a generic illustrated comic style.
 - Keep speech balloons compact and out of the way of faces and valuable imagery.

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="noir_ink">#202123</color>
+    <color name="noir_paper">#ECE7DC</color>
+    <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:statusBarColor">@color/noir_ink</item>
+        <item name="android:navigationBarColor">@color/noir_ink</item>
+        <item name="android:windowBackground">@color/noir_ink</item>
+        <item name="android:colorAccent">#AE3832</item>
+    </style>
+</resources>
