@@ -2,6 +2,7 @@
 - [Venice moderation limits](venice-moderation-limits.md) — authenticated Venice access does not guarantee acceptance of non-explicit swimwear scenes.
 - [Phone-app direction](phone-app-direction.md) — dictation is important because the user eventually wants a phone version with spoken script entry.
 - [Native toolchain compatibility](native-toolchain-compatibility.md) — this workspace has Nix and FHS runtimes; keep a native tool's interpreter and libc compatible.
+- [Database test safety](database-test-safety.md) — NODE_ENV alone does not isolate fixtures; verify a development target and guard cleanup hooks.
 - [Google Play setup](google-play-setup.md) — the optional OAuth connector is not a prerequisite for an AAB; use RevenueCat's documented Play service-credential setup.
 - [Development preview privacy](development-preview-privacy.md) — documented private defaults are not proof of this workspace's current access settings.
 - [PC-only scope](pc-only-scope.md) — Android, billing and credential work is halted; do not resume without explicit user direction.

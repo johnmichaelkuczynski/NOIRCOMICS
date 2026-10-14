@@ -1,16 +1,21 @@
 # Noir Comic Generator — Android release
 
-## Usage-limited build; store activation still pending
+## Version 1.3.0 — internal-testing build; activation still pending
 
 Version 1.0.0 was unrestricted and must not be used for the commercial release.
-Version 1.2.0 adds direct Google Play Developer API subscription/order verification,
+Version 1.3.0 retains direct Google Play Developer API subscription/order verification,
 acknowledgement, authenticated real-time notifications and Play Integrity-bound
 device sessions, receipt restoration and generation requests.
-The introductory defaults are 12 panels, two script generations (including
-new versions), and 12 five-minute dictations. The conservative paid defaults
+The Android trial is now two COMPLETE comic generations, regardless of the
+selected panel count. Failed/incomplete comics do not consume that allowance.
+New trial/job records use the existing billing_usage table; no migrations
+are added and existing usage or purchase records are not rewritten.
+Separate existing assist limits remain two script generations (including
+new versions) and 12 five-minute dictations. The conservative paid defaults
 are 24 panels, 20 scripts and 30 dictations per verified billing period;
 these paid amounts are implementation defaults, not confirmed user requirements.
-Failed attempts have bounded processing budgets too. No unlimited-generation
+Comic trial failures do not count; Play Integrity challenges remain rate-limited.
+No unlimited-generation
 plan or billing-error fallback is enabled.
 
 Noir has a separate RevenueCat project, Android app and monthly offering.
@@ -28,21 +33,18 @@ Store credentials belong in RevenueCat's secure credential settings, not chat
 or this repository. Do not change other apps' RevenueCat catalogs.
 
 This is a separate Android application; the approved PC interface is unchanged.
-The shared backend now enforces usage and aggregate introductory spend limits
-on all public generation routes to prevent bypass through unmetered web requests.
-Every generation route now requires an attested Android session and a fresh,
-one-use, body/path/device-bound proof. Anonymous desktop/legacy API generation is
-deliberately rejected rather than providing an Android paywall bypass. The
-desktop layout is retained, but its anonymous generation is no longer permitted.
-Device/network anti-abuse limits and an aggregate monthly introductory budget
-may reduce effective free allowances.
+Android requests carry an authenticated session and fresh, one-use,
+body/path/device-bound Play Integrity proof. Ordinary PC requests remain
+independent of Android subscription verification and are not subjected to
+the Android comic trial. Do not remove that PC branch to address Android abuse.
+Android script/dictation assist limits and paid usage limits remain separate.
 
 The Android app bundles a production build of the approved PC interface, loads
 it in an HTTPS-origin Android WebView, and calls the published server. OpenAI,
 AssemblyAI and Venice credentials stay exclusively on the server.
 
 - Android package: `ink.noircomics.app`
-- Version: `1.2.0` / version code `3`
+- Version: `1.3.0` / version code `4`
 - Minimum Android: 10 (API 29)
 - Target and compile Android: 16 (API 36)
 - Recording permission: microphone only, requested when dictation is used
@@ -57,10 +59,14 @@ AssemblyAI and Venice credentials stay exclusively on the server.
 The verified production origin is `https://noircomics.ink`.
 The new billing-enabled backend and its database schema must be published.
 Android requires `/api/billing/session` and `/api/billing/usage` protocol version
-3 before it sends generation requests. An older/unavailable backend blocks
+4 before it sends generation requests. An older/unavailable backend blocks
 generation instead of falling back to unmetered endpoints.
 Publishing this backend is separate from uploading the AAB to Google Play;
 the user handles both publishing decisions. No Google Play upload is automated.
+Do not publish the PC app as part of preparing this Android bundle. Activation
+of Android protocol 4 requires a separate, explicitly approved backend release.
+Observed production /api/billing/config still returns protocol 3, with no
+Cloud project number and no configured app-signing certificate.
 
 ## Building
 
@@ -75,7 +81,7 @@ Run Gradle from this directory with:
 `gradle :app:bundleRelease -PappOrigin=https://noircomics.ink`
 
 Then run `node android/tools/sign-bundle.mjs` from the workspace root. The
-result is `generated-artifacts/android/noir-comic-generator-android-1.2.0.aab`.
+result is `generated-artifacts/android/noir-comic-generator-android-1.3.0.aab`.
 
 Provide the SDK through `ANDROID_HOME`. A local `aapt2` may be selected using
 `-Pandroid.aapt2FromMavenOverride=/path/to/aapt2`. This workspace provides an
@@ -118,7 +124,7 @@ lifecycle behavior require device testing; browser tests do not establish them.
    and GOOGLE_PLAY_APP_SIGNING_SHA256 (Play Console's APP-SIGNING certificate
    SHA-256, not blindly the upload-key fingerprint; comma-separated if rotating).
 5. Configure Play Integrity for this package/Cloud project. This release
-   requires PLAY_RECOGNIZED, the allowed certificate, versionCode >= 3,
+requires PLAY_RECOGNIZED, the allowed certificate, versionCode >= 4,
    LICENSED and MEETS_DEVICE_INTEGRITY. Sideloading is not a valid live test.
 6. Configure Real-time Developer Notifications through Google Pub/Sub with an
    authenticated push to:

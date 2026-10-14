@@ -1,0 +1,18 @@
+Build a production-quality Android version of Noir Comic Creator with Google Play subscription billing.
+
+**CRITICAL: DO NOT BREAK THE EXISTING PC APPLICATION.**
+
+1. Preserve all existing comic-generation functionality, image quality, character consistency, script editing, and downloads of complete comics and individual panels.
+2. Implement Google Play Billing for a **$4.95/month automatically renewing subscription**.
+3. Allow each user **2 free comic generations** before requiring payment. Enforce this limit server-side, using persistent user identification so reinstalling cannot reset it. Do not count failed generations.
+4. After the free allowance, display a subscription screen with the $4.95 monthly price and a Subscribe button that opens Google Play's native purchase flow.
+5. Implement purchase verification using the Google Play Developer API and the existing GOOGLE_PLAY_SERVICE_ACCOUNT_JSON secret. Verify purchases server-side, acknowledge purchases, and securely manage subscription entitlements.
+6. Implement Restore Purchases, subscription expiration, cancellation, renewal, refund, and revoked-access handling.
+7. Never require Google Play verification for ordinary PC comic generation. Keep Android access controls separate from PC access controls.
+8. Preserve the existing production database and all stored content. Do not introduce unnecessary migrations or alter the PC publishing configuration.
+9. Build a NEW signed release .aab with an incremented versionCode. Verify its signature, package ID, billing integration, and backend connectivity.
+10. Give me the exact downloadable .aab file and a concise list of Google Play Console configuration steps.
+
+**IMPORTANT:** Do not attempt to publish the PC application. Do not ask me to test purchases before generating the .aab. Clearly distinguish completed implementation from tests that require Google Play Console or an Android device.
+
+Do not declare the Android application release-ready until the billing integration has been verified.

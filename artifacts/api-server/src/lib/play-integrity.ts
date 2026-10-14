@@ -26,7 +26,7 @@ export function checkIntegrityPayload(payload: any, expectedHash: string, certif
   if (details?.requestPackageName !== PLAY_PACKAGE || details?.requestHash !== expectedHash ||
     !Number.isFinite(timestamp) || Math.abs(now - timestamp) > 120_000 ||
     app?.packageName !== PLAY_PACKAGE || app?.appRecognitionVerdict !== "PLAY_RECOGNIZED" ||
-    !/^\d+$/.test(String(app?.versionCode)) || Number(app.versionCode) < 3 ||
+    !/^\d+$/.test(String(app?.versionCode)) || Number(app.versionCode) < 4 ||
     !Array.isArray(app?.certificateSha256Digest) || !app.certificateSha256Digest.some((cert: string) => certificates.includes(cert)) ||
     !Array.isArray(payload?.deviceIntegrity?.deviceRecognitionVerdict) ||
     !payload.deviceIntegrity.deviceRecognitionVerdict.includes("MEETS_DEVICE_INTEGRITY") ||
@@ -53,7 +53,7 @@ export async function challenge(req: Request, purpose: Purpose, customerId?: str
     await connection.query("COMMIT");
   } catch (error) { await connection.query("ROLLBACK"); throw error; }
   finally { connection.release(); }
-  return { version: 3, nonce, cloudProjectNumber: configuration.projectNumber };
+  return { version: 4, nonce, cloudProjectNumber: configuration.projectNumber };
 }
 export async function consumeIntegrity(purpose: Purpose, nonce: unknown, token: unknown, deviceId: string,
   payload = "", path = "") {

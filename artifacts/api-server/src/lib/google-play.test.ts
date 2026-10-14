@@ -115,7 +115,7 @@ test("existing paid subscriptions can be restored after new subscriptions are di
 });
 function integrity() {
   return { requestDetails: { requestPackageName: "ink.noircomics.app", requestHash: "fixture-hash", timestampMillis: String(Date.now()) },
-    appIntegrity: { packageName: "ink.noircomics.app", appRecognitionVerdict: "PLAY_RECOGNIZED", versionCode: "3", certificateSha256Digest: ["fixture-cert"] },
+    appIntegrity: { packageName: "ink.noircomics.app", appRecognitionVerdict: "PLAY_RECOGNIZED", versionCode: "4", certificateSha256Digest: ["fixture-cert"] },
     deviceIntegrity: { deviceRecognitionVerdict: ["MEETS_DEVICE_INTEGRITY"] },
     accountDetails: { appLicensingVerdict: "LICENSED" } };
 }
@@ -142,7 +142,8 @@ test("proof hashes cannot be moved between receipt, device, generation path or b
   assert.notEqual(hash, expectedIntegrityHash("generation", "nonce", "device", "other-body", "/api/comics/generate"));
   assert.notEqual(hash, expectedIntegrityHash("generation", "nonce", "device", "body", "/api/comics/script"));
 });
-test("verified restore shares one quota across devices; renewal and refund update entitlements", async () => {
+const databaseTestsEnabled = process.env.NOIR_BILLING_DB_TESTS === "true" && process.env.NODE_ENV === "development";
+test("verified restore shares one quota across devices; renewal and refund update entitlements", { skip: !databaseTestsEnabled }, async () => {
   let state = subscription();
   let order = paidOrder();
   const verifier = new PlayVerifier(async path => path.includes("/monetization/") ? catalog()
@@ -167,6 +168,7 @@ test("verified restore shares one quota across devices; renewal and refund updat
   assert.equal((await googleMembership(uid, verifier)).subscribed, false);
 });
 after(async () => {
+  if (!databaseTestsEnabled) { await pool.end(); return; }
   await pool.query("DELETE FROM play_devices WHERE token_hash=$1", [digest(token)]);
   await pool.query("DELETE FROM play_purchases WHERE token_hash=$1", [digest(token)]);
   await pool.query("DELETE FROM billing_usage WHERE key LIKE $1", [`paid:${digest(token)}:%`]);

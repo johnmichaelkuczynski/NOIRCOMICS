@@ -23,7 +23,7 @@
       headers: token ? { 'X-Noir-Session': token } : {}, cache: 'no-store',
     });
     const value = await response.json();
-    if (!response.ok || value.version !== 3) throw new Error(value.error || 'The verified billing backend is unavailable.');
+    if (!response.ok || value.version !== 4) throw new Error(value.error || 'The updated Android billing backend is unavailable.');
     return value;
   }
   function nativeProof(method, challenge, ...args) {
@@ -46,7 +46,7 @@
   counts.textContent = 'Checking secure usage limits…';
   const details = document.createElement('p');
   details.className = 'usage-note';
-  details.textContent = '12 free panels and 2 screenplay generations. A new script version counts as another generation.';
+  details.textContent = 'Two complete comic generations are free. Failed comic generations do not use this allowance.';
   const message = document.createElement('p');
   message.setAttribute('role', 'status');
   message.dataset.testid = 'android-billing-message';
@@ -87,7 +87,7 @@
   manage.onclick = () => window.NoirBilling.manage();
   const terms = document.createElement('p');
   terms.className = 'usage-note';
-  terms.textContent = 'Monthly memberships renew until cancelled in Google Play. Failed attempts may use processing allowance. Usage is limited; billing failure never grants unlimited generation.';
+  terms.textContent = 'Monthly memberships renew until cancelled in Google Play. Failed comic generations do not use the two-comic trial. Paid usage limits are shown above.';
   card.append(title, counts, details, message, buy, restore, manage, terms);
   const mount = () => {
     const target = document.querySelector('main');
@@ -108,16 +108,23 @@
     if (!token) throw new Error('Secure billing has not connected. Generation remains blocked.');
     const response = await originalFetch('/api/billing/usage', { headers: { 'X-Noir-Session': token }, cache: 'no-store' });
     const value = await response.json();
-    if (!response.ok || value.version !== 3 || typeof value.subscribed !== 'boolean' || !value.remaining) {
+    if (!response.ok || value.version !== 4 || typeof value.subscribed !== 'boolean' || !value.remaining ||
+      (!value.subscribed && typeof value.freeComics?.remaining !== 'number')) {
       status = null;
       throw new Error(value.error || 'Usage could not be verified. Generation remains blocked.');
     }
     status = value;
     title.textContent = value.subscribed ? 'Monthly membership active' : 'Your free allowance';
-    counts.textContent = `${value.remaining.panels} panels · ${value.remaining.scripts} scripts · ${value.remaining.voices} dictations remaining`;
+    counts.textContent = value.subscribed
+      ? `${value.remaining.panels} panels · ${value.remaining.scripts} scripts · ${value.remaining.voices} dictations remaining`
+      : `${value.freeComics.remaining} of 2 free comic generations remaining`;
     details.textContent = value.subscribed
       ? `This monthly allowance includes ${value.monthlyLimits.panels} panels, ${value.monthlyLimits.scripts} scripts and ${value.monthlyLimits.voices} voice recordings. ${value.autoRenew ? 'Renews monthly.' : 'Renewal cancelled.'} ${value.expiresAt ? 'Paid access through ' + new Date(value.expiresAt).toLocaleDateString() + '.' : ''}`
-      : 'Up to 12 free panels, 2 screenplay generations and 12 dictations, subject to abuse-prevention limits. New script versions count as another generation.';
+      : 'The two-comic allowance is stored on the server and survives normal reinstall with the same signing key. Failed or incomplete comics do not count.';
+    if (!value.subscribed && value.freeComics.remaining === 0) {
+      title.textContent = 'Subscribe to create more comics';
+      message.textContent = 'Your two free comics have been used. Subscribe to continue; your existing writing and downloads are kept.';
+    }
     buy.disabled = value.subscribed || !storeReady || awaitingPurchase || syncing;
     if (value.subscribed) buy.textContent = 'Membership active';
     else if (storeReady) buy.textContent = `Subscribe — ${storePrice} / month`;
@@ -133,7 +140,7 @@
     });
     if (!response.ok) throw new Error('The billing-enabled server is unavailable or not published yet. Generation is blocked to prevent unrestricted charges.');
     const data = await response.json();
-    if (!response.ok || data.version !== 3 || typeof data.token !== 'string' || !data.customerId) {
+    if (!response.ok || data.version !== 4 || typeof data.token !== 'string' || !data.customerId) {
       throw new Error('The billing-enabled server is not published yet. Generation is blocked to prevent unrestricted charges.');
     }
     token = data.token;

@@ -4,8 +4,9 @@ import { pool } from "@workspace/db";
 import { googleMembership } from "./google-play";
 import { verifyGeneration } from "./play-integrity";
 import { ComicServiceError } from "./comic-providers";
+import { freeComicUsage, reserveFreeComic } from "./android-comic-trials";
 
-export const BILLING_VERSION = 3;
+export const BILLING_VERSION = 4;
 export const FREE_LIMITS = { panels: 12, scripts: 2, voices: 12 };
 // Conservative cost ceiling. Never advertise unlimited AI generation.
 export const PAID_LIMITS = { panels: 24, scripts: 20, voices: 30 };
@@ -86,6 +87,7 @@ export async function usage(req: Request) {
       scope.limits[kind], attemptLimit(scope.key, scope.limits[kind])))),
   ])) as Counts;
   return { version: BILLING_VERSION, customerId: identity.customerId, subscribed: tier.subscribed,
+    freeComics: tier.subscribed ? null : await freeComicUsage(identity.customerId),
     remaining: available, limits: tier.subscribed ? PAID_LIMITS : FREE_LIMITS,
     monthlyLimits: PAID_LIMITS, expiresAt: tier.expiresAt || null, autoRenew: !!tier.autoRenew };
 }
@@ -146,7 +148,9 @@ export async function reserveForRequest(req: Request, kind: Kind, amount: number
       return { async finish(_delivered: number) {} };
     }
     if (identity.native) await verifyGeneration(req, identity.customerId);
-    return await reserveCredits(identity, await membership(identity), kind, amount);
+    const tier = await membership(identity);
+    if (!tier.subscribed && kind === "panels") return await reserveFreeComic(identity.customerId, amount);
+    return await reserveCredits(identity, tier, kind, amount);
   } catch (error) {
     if (error instanceof ComicServiceError) throw error;
     throw new ComicServiceError("Usage verification is unavailable. Generation is blocked; please try later.", 503);
