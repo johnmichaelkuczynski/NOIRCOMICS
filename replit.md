@@ -83,17 +83,25 @@ Converts a short essay or story into a selected number of black-and-white film-n
 
 ## Generation cost protection
 
-- Shared public generation routes enforce persistent usage reservations before
-  contacting AI providers and now require a licensed Android app/device proof.
-  The PC interface layout is unchanged, but anonymous web generation is blocked
-  because it would bypass the Android paywall.
-- Anonymous device/network trial limits and a bounded aggregate introductory
+- The PC application must not be gated by Android billing, Play verification,
+  subscriptions, or newly introduced authentication. Keep the existing engine
+  and layout. Do not work on Android until the PC version is fully working.
+  **Why:** the user explicitly made restoring the PC app the sole priority and
+  rejected adding authentication barriers or unrelated security changes.
+- Android sessions retain persistent usage reservations before contacting AI
+  providers. Android device/network trial limits and a bounded aggregate introductory
   budget prevent unmetered public requests. Failed attempts have separate
   processing ceilings, and transcription is limited server-side to five minutes.
 - Paid allowances are conservative implementation defaults, not user-confirmed
   subscription terms. Do not promise unlimited AI generation at $4.95/month.
 
 - The user assumes short texts for now; short, information-dense writing may still need many panels.
+- Web output must be downloadable as a complete comic and as individual panels,
+  including the dialogue, not just raw artwork. Include a ZIP of separate,
+  consistently sized frame PNGs for video use. Clear resets/reloads the entire
+  page immediately. Desktop testing in the development preview is independent
+  of Android builds and real Google Play purchase testing.
+  **Why:** the user explicitly requested these web-app capabilities.
 - Match the provided photographic black-and-white noir comic style, rather than a generic illustrated comic style.
 - Keep speech balloons compact and out of the way of faces and valuable imagery.
 

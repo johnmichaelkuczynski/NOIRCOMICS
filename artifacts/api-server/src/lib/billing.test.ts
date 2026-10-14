@@ -2,7 +2,7 @@ import test, { after } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { pool } from "@workspace/db";
-import { identify, issueSession, reserveCredits, FREE_LIMITS, PAID_LIMITS } from "./billing";
+import { identify, issueSession, reserveCredits, reserveForRequest, usage, FREE_LIMITS, PAID_LIMITS } from "./billing";
 import type { Request } from "express";
 
 if (process.env.NODE_ENV === "production") throw new Error("Run billing integration tests only against development.");
@@ -35,6 +35,21 @@ test("free panel generation stops after exactly twelve panels", async () => {
   const credit = await reserve("free-panels", "panels", FREE_LIMITS.panels, free);
   await credit.finish(FREE_LIMITS.panels);
   await assert.rejects(reserve("free-panels", "panels", 1, free), { status: 402 });
+});
+test("PC generation requires neither Android proof nor subscription or developer authentication", async () => {
+  const previous = process.env.NODE_ENV;
+  const request = { ip: "198.51.100.24", get: () => undefined } as unknown as Request;
+  try {
+    for (const environment of ["development", "production", "test"]) {
+      process.env.NODE_ENV = environment;
+      assert.deepEqual(await usage(request), { version: 3, desktop: true, unrestricted: true });
+      for (let i = 0; i < 4; i++) await (await reserveForRequest(request, "panels", 24)).finish(24);
+      await (await reserveForRequest(request, "scripts", 1)).finish(1);
+    }
+  } finally {
+    if (previous === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = previous;
+  }
 });
 test("script regeneration uses the same two-script trial", async () => {
   for (let i = 0; i < FREE_LIMITS.scripts; i++) await (await reserve("free-scripts", "scripts", 1, free)).finish(1);

@@ -343,6 +343,8 @@ button { cursor: pointer; }
 .generate-btn:disabled { cursor:not-allowed; opacity:.55; }
 .error-box { margin-top:13px; padding:12px 13px; border:1px solid #dba9a0; color:#852f27; background:#f3e4df; font-size:12px; line-height:1.5; }
 .result-area { min-width:0; }
+.comic-downloads { margin:16px 0 22px; }
+.comic-download-buttons { display:flex; flex-wrap:wrap; gap:10px; }
 .result-heading { display:flex; justify-content:space-between; align-items:end; padding:5px 0 16px; border-bottom:1px solid #c9c3b8; margin-bottom:18px; }
 .result-heading h2 { margin:0; font:700 24px var(--app-font-serif); letter-spacing:-.025em; }
 .result-heading p { margin:5px 0 0; color:#77736c; font:10px var(--app-font-mono); letter-spacing:.08em; text-transform:uppercase; }

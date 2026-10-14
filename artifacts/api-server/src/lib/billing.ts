@@ -77,7 +77,7 @@ function attemptLimit(key: string, cap: number) {
 
 export async function usage(req: Request) {
   const identity = identify(req);
-  if (!identity.native) throw new ComicServiceError("An authenticated Android session is required.", 401);
+  if (!identity.native) return { version: BILLING_VERSION, desktop: true, unrestricted: true };
   const tier = await membership(identity);
   const scopes = buckets(identity, tier);
   const rows = await pool.query<Row>("SELECT * FROM billing_usage WHERE key = ANY($1::text[])", [scopes.map(s => s.key)]);
@@ -139,8 +139,13 @@ export async function reserveCredits(identity: Identity, tier: Tier, kind: Kind,
 export async function reserveForRequest(req: Request, kind: Kind, amount: number) {
   try {
     const identity = identify(req);
-    if (!identity.native) throw new ComicServiceError("Generation requires a verified Android app session. Anonymous legacy requests are not allowed.", 401);
-    await verifyGeneration(req, identity.customerId);
+    if (!identity.native) {
+      if (!Number.isInteger(amount) || amount < 1 || !(kind in FREE_LIMITS)) throw new ComicServiceError("Invalid generation request.", 400);
+      // The PC application is independent of the Android subscription system.
+      // Preserve its original web access without introducing new auth or quotas.
+      return { async finish(_delivered: number) {} };
+    }
+    if (identity.native) await verifyGeneration(req, identity.customerId);
     return await reserveCredits(identity, await membership(identity), kind, amount);
   } catch (error) {
     if (error instanceof ComicServiceError) throw error;

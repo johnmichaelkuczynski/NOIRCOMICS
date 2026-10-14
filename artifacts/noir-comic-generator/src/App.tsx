@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import { getGetComicProvidersQueryKey, useGenerateComic, useGetComicProviders, useWriteComicScript, type ComicGenerationInputProvider, type ScriptDraft as Draft } from '@workspace/api-client-react';
-import { ArrowUpRight, FileText, Upload, PenLine } from 'lucide-react';
+import { ArrowUpRight, FileText, Upload, PenLine, RefreshCw } from 'lucide-react';
 import { DictationControl } from '@/components/dictation-control';
 import { ScriptDraft } from '@/components/script-draft';
+import { ComicDownloads } from '@/components/comic-downloads';
+import { DevPreviewUsage } from '@/components/dev-preview-usage';
 import { errorMessage as getErrorMessage } from '@/lib/error-message';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -45,7 +47,8 @@ function Home() {
   const fileInput = useRef<HTMLInputElement>(null);
   const mutation = useGenerateComic();
   const scriptMutation = useWriteComicScript();
-  const comic = mutation.data;
+  const previousComic = useRef<typeof mutation.data>(undefined);
+  const comic = mutation.data || previousComic.current;
   const isGenerating = preparing || mutation.isPending;
   const isBusy = isGenerating || scriptMutation.isPending || dictating || regenerating;
   useEffect(() => {
@@ -109,9 +112,10 @@ function Home() {
     try {
       setPreparing(true);
       const styleReferenceImage = await loadReferenceAsJpeg();
-      await mutation.mutateAsync({
+      const result = await mutation.mutateAsync({
         data: { text: source.trim(), panelCount, styleReferenceImage, provider },
       });
+      previousComic.current = result;
     } catch (error) {
       setLocalError(getErrorMessage(error, 'The comic could not be generated. Please try again.'));
     } finally {
@@ -193,9 +197,12 @@ function Home() {
           <form className="editor-panel" onSubmit={generate}>
             <div className="panel-head">
               <span className="section-label">Your source material</span>
-              <span className="step-no">01 / 02</span>
+              <button className="file-button" type="button" disabled={isBusy} data-testid="button-clear-page" title="Resets the whole page and removes the current writing and output" onClick={() => window.location.reload()}>
+                <RefreshCw size={13} /> Clear page
+              </button>
             </div>
             <div className="editor-body">
+              {import.meta.env.DEV && <DevPreviewUsage />}
               <div className="field-title">
                 <label htmlFor="story-text">Writing or story idea</label>
                 <span>UP TO 8,000 CHARACTERS</span>
@@ -287,6 +294,7 @@ function Home() {
               </div>
               <span className="section-label">02 / 02</span>
             </div>
+            {comic && <ComicDownloads comic={comic} disabled={isBusy} />}
             {isGenerating ? (
               <div className="loading-stage" data-testid="status-generation-loading">
                 <div className="loading-copy"><span className="loading-mark" /> Generating your panels. This can take a few minutes.</div>
@@ -310,11 +318,13 @@ function Home() {
                       </div>
                       <div className="comic-caption">
                         <div className="caption-top">Frame {String(panel.index).padStart(2, '0')}</div>
+                        <ComicDownloads comic={{ title: `${comic.title} — Frame ${panel.index}`, panels: [panel] }} disabled={isBusy} panelOnly />
                       </div>
                     </article>
                   ))}
                 </div>
                 <div className="result-foot"><span>End of sequence</span><span>Keep writing. Keep looking.</span></div>
+                <ComicDownloads comic={comic} disabled={isBusy} />
               </div>
             ) : (
               <div className="empty-stage" data-testid="empty-comic-state">

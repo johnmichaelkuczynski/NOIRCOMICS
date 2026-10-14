@@ -56,3 +56,31 @@ mtime_ms = 1791983155515
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/3648dae0-441a-4ee7-9194-467f69a2d0e1/f9e8cd8b-88c2-45dd-9746-b743e6708893"
 storage_version_token = "1791983175003506"
 content_type = "text/plain"
+
+[[outputs]]
+id = "BxH3o9Z23iamsLKy7_S-Z"
+uri = "file://generated-artifacts/The%20Silver%20Umbrella%20Warning%20-%20separate%20frames.zip"
+type = "unspecified"
+title = "Tested comic: separate video frames"
+description = "Exact real test output. Two numbered PNG frames, each 1024 × 1536, with dialogue and artwork."
+logical_id = "88325b30-17e2-4d81-adf0-30a82c586f77"
+content_hash = "sha256:9393b8990f68f5095b2d5b5c727e326b82c7f5b08d0d6a8f2e9925b00391a13c"
+size = 2073076
+mtime_ms = 1791987997573
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/88325b30-17e2-4d81-adf0-30a82c586f77/6214b319-6b4a-444a-9214-8bbc6a49255b"
+storage_version_token = "1791988716886850"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "8SekhqFaolHXql07lVdBe"
+uri = "file://generated-artifacts/The%20Silver%20Umbrella%20Warning.png"
+type = "image"
+title = "Tested complete comic"
+description = "Exact two-panel comic generated, displayed, and downloaded successfully in the PC browser test."
+logical_id = "f3d45cc1-a17f-4476-bb09-35fccf2216e3"
+content_hash = "sha256:e27486e5e176ce246e3ec20a2a951bdf589611d6217d33c975c4aafec6d06587"
+size = 1036036
+mtime_ms = 1791987962513
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/f3d45cc1-a17f-4476-bb09-35fccf2216e3/6b738ab4-3739-4052-8892-c9115b2b85f5"
+storage_version_token = "1791988717558363"
+content_type = "image/png"
