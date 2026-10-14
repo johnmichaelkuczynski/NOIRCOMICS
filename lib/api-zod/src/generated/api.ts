@@ -8,14 +8,69 @@
 import * as zod from 'zod';
 
 
+export const GetBillingConfigurationResponse = zod.object({
+  "version": zod.number().int(),
+  "serviceCredentials": zod.boolean(),
+  "projectNumber": zod.string(),
+  "signingCertificates": zod.boolean(),
+  "testPurchasesAllowed": zod.boolean()
+})
+
+
+export const GetAndroidBillingChallengeQueryParams = zod.object({
+  "purpose": zod.enum(['session', 'generation', 'receipt'])
+})
+
+export const GetAndroidBillingChallengeResponse = zod.object({
+  "version": zod.number().int(),
+  "nonce": zod.string(),
+  "cloudProjectNumber": zod.string()
+})
+
+
+export const GetVerifiedPlayCatalogResponse = zod.object({
+  "usdPrice": zod.string(),
+  "billingPeriod": zod.string(),
+  "productId": zod.string(),
+  "basePlanId": zod.string()
+})
+
+
+export const verifyGooglePlayPurchaseBodyPurchaseTokenMin = 5;
+export const verifyGooglePlayPurchaseBodyPurchaseTokenMax = 8192;
+
+
+
+export const VerifyGooglePlayPurchaseBody = zod.object({
+  "purchaseToken": zod.string().min(verifyGooglePlayPurchaseBodyPurchaseTokenMin).max(verifyGooglePlayPurchaseBodyPurchaseTokenMax),
+  "nonce": zod.string(),
+  "integrityToken": zod.string()
+})
+
+export const VerifyGooglePlayPurchaseResponse = zod.object({
+  "verified": zod.boolean(),
+  "subscribed": zod.boolean(),
+  "expiresAt": zod.coerce.date(),
+  "autoRenew": zod.boolean()
+})
+
+
 /**
- * @summary Establish a signed Android usage session without granting a subscription
+ * @summary Authenticate Google PubSub OIDC delivery, then re-query Google; notifications cannot grant access by assertion
+ */
+export const ReceiveGooglePlayNotificationResponse = zod.void()
+
+
+/**
+ * @summary Establish an Android session only after fresh Play Integrity attestation; no paid access is implied
  */
 export const createBillingSessionBodyDeviceIdRegExp = new RegExp('^[a-f0-9]{64}$');
 
 
 export const CreateBillingSessionBody = zod.object({
-  "deviceId": zod.string().regex(createBillingSessionBodyDeviceIdRegExp)
+  "deviceId": zod.string().regex(createBillingSessionBodyDeviceIdRegExp),
+  "nonce": zod.string(),
+  "integrityToken": zod.string()
 })
 
 export const CreateBillingSessionResponse = zod.object({

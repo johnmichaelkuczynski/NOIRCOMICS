@@ -41,6 +41,7 @@ public final class MainActivity extends Activity {
     private static final int AUDIO_REQUEST = 10;
     private static final int FILE_REQUEST = 11;
     private WebView browser;
+    private BillingController billing;
     private PermissionRequest pendingAudio;
     private ValueCallback<Uri[]> pendingFiles;
     private final ExecutorService downloads = Executors.newSingleThreadExecutor();
@@ -76,7 +77,8 @@ public final class MainActivity extends Activity {
         settings.setSupportMultipleWindows(false);
         settings.setJavaScriptCanOpenWindowsAutomatically(false);
         browser.addJavascriptInterface(new DownloadBridge(), "NoirDownloads");
-        browser.addJavascriptInterface(new BillingController(this, browser), "NoirBilling");
+        billing = new BillingController(this, browser);
+        browser.addJavascriptInterface(billing, "NoirBilling");
         browser.setWebViewClient(new WebViewClient() {
             @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
@@ -229,13 +231,17 @@ public final class MainActivity extends Activity {
     }
     @Override protected void onResume() {
         super.onResume();
-        if (browser != null) browser.onResume();
+        if (browser != null) {
+            browser.onResume();
+            browser.evaluateJavascript("window.__noirResumeBilling && window.__noirResumeBilling()", null);
+        }
     }
     @Override protected void onDestroy() {
         if (pendingAudio != null) pendingAudio.deny();
         if (pendingFiles != null) pendingFiles.onReceiveValue(null);
         browser.removeJavascriptInterface("NoirDownloads");
         browser.removeJavascriptInterface("NoirBilling");
+        if (billing != null) billing.close();
         browser.destroy();
         downloads.shutdown();
         super.onDestroy();

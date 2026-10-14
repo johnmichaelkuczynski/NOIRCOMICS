@@ -28,3 +28,31 @@ mtime_ms = 1791979199380
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/dd5385d5-df4e-465a-b9c4-b8529c9334f0/a8221424-6ba2-4bc6-a113-f92cecbd7cec"
 storage_version_token = "1791979305741582"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "VEumCHtCgT7qsFwKj-Icl"
+uri = "file://generated-artifacts/android/noir-comic-generator-android-1.2.0.aab"
+type = "unspecified"
+title = "Noir Android 1.2.0 — signed release candidate"
+description = "New signed AAB, versionCode 3. Build, lint, signature and bundle validation passed. NOT payment-ready: live Google Play configuration and device payment verification are still blocked."
+logical_id = "a35dffc1-9edc-4a85-9a77-e7c75827ce03"
+content_hash = "sha256:02876cb1fe4ad93365e10ad67b7a522988503d504253392f9a2875d16b66c72c"
+size = 6655714
+mtime_ms = 1791983109594
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/a35dffc1-9edc-4a85-9a77-e7c75827ce03/b236a648-a1fb-4512-9202-8fb5c709ceaa"
+storage_version_token = "1791983174325688"
+content_type = "application/octet-stream"
+
+[[outputs]]
+id = "858wj9Bdbb_vcQgqGMnCb"
+uri = "file://generated-artifacts/android/noir-android-1.2.0-verification.txt"
+type = "text"
+title = "Android billing verification and blockers"
+description = "Exact bundle checksum, 46 passing fixture/database tests, mocked browser evidence, production status and remaining live Google Play checks."
+logical_id = "3648dae0-441a-4ee7-9194-467f69a2d0e1"
+content_hash = "sha256:367d5f8262b0308ed6eb3ae60007464d45f3c830bcd02deb4deef38244c505f3"
+size = 5516
+mtime_ms = 1791983155515
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/3648dae0-441a-4ee7-9194-467f69a2d0e1/f9e8cd8b-88c2-45dd-9746-b743e6708893"
+storage_version_token = "1791983175003506"
+content_type = "text/plain"

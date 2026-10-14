@@ -27,10 +27,16 @@ import type {
   ComicGenerationInput,
   ComicProviders,
   CreateBillingSession200,
+  GetAndroidBillingChallenge200,
+  GetAndroidBillingChallengeParams,
+  GetBillingConfiguration200,
   GetBillingUsage200,
+  GetVerifiedPlayCatalog200,
   HealthStatus,
+  PlayReceiptInput,
   ScriptDraft,
-  StoryIdeaInput
+  StoryIdeaInput,
+  VerifyGooglePlayPurchase200
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -60,6 +66,382 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+export const getGetBillingConfigurationUrl = () => {
+
+
+
+
+  return `/api/billing/config`
+}
+
+export const getBillingConfiguration = async ( options?: Parameters<typeof customFetch>[1]): Promise<GetBillingConfiguration200> => {
+
+  return customFetch<GetBillingConfiguration200>(getGetBillingConfigurationUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBillingConfigurationQueryKey = () => {
+    return [
+    `/api/billing/config`
+    ] as const;
+    }
+
+
+export const getGetBillingConfigurationQueryOptions = <TData = Awaited<ReturnType<typeof getBillingConfiguration>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBillingConfiguration>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBillingConfigurationQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBillingConfiguration>>> = ({ signal }) => getBillingConfiguration({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBillingConfiguration>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBillingConfigurationQueryResult = NonNullable<Awaited<ReturnType<typeof getBillingConfiguration>>>
+export type GetBillingConfigurationQueryError = ErrorType<unknown>
+
+
+
+export function useGetBillingConfiguration<TData = Awaited<ReturnType<typeof getBillingConfiguration>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBillingConfiguration>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBillingConfigurationQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetAndroidBillingChallengeUrl = (params: GetAndroidBillingChallengeParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/billing/challenge?${stringifiedParams}` : `/api/billing/challenge`
+}
+
+export const getAndroidBillingChallenge = async (params: GetAndroidBillingChallengeParams, options?: Parameters<typeof customFetch>[1]): Promise<GetAndroidBillingChallenge200> => {
+
+  return customFetch<GetAndroidBillingChallenge200>(getGetAndroidBillingChallengeUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAndroidBillingChallengeQueryKey = (params?: GetAndroidBillingChallengeParams,) => {
+    return [
+    `/api/billing/challenge`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetAndroidBillingChallengeQueryOptions = <TData = Awaited<ReturnType<typeof getAndroidBillingChallenge>>, TError = ErrorType<ApiError>>(params: GetAndroidBillingChallengeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAndroidBillingChallenge>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAndroidBillingChallengeQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAndroidBillingChallenge>>> = ({ signal }) => getAndroidBillingChallenge(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAndroidBillingChallenge>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAndroidBillingChallengeQueryResult = NonNullable<Awaited<ReturnType<typeof getAndroidBillingChallenge>>>
+export type GetAndroidBillingChallengeQueryError = ErrorType<ApiError>
+
+
+
+export function useGetAndroidBillingChallenge<TData = Awaited<ReturnType<typeof getAndroidBillingChallenge>>, TError = ErrorType<ApiError>>(
+ params: GetAndroidBillingChallengeParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAndroidBillingChallenge>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAndroidBillingChallengeQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetVerifiedPlayCatalogUrl = () => {
+
+
+
+
+  return `/api/billing/catalog`
+}
+
+export const getVerifiedPlayCatalog = async ( options?: Parameters<typeof customFetch>[1]): Promise<GetVerifiedPlayCatalog200> => {
+
+  return customFetch<GetVerifiedPlayCatalog200>(getGetVerifiedPlayCatalogUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVerifiedPlayCatalogQueryKey = () => {
+    return [
+    `/api/billing/catalog`
+    ] as const;
+    }
+
+
+export const getGetVerifiedPlayCatalogQueryOptions = <TData = Awaited<ReturnType<typeof getVerifiedPlayCatalog>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVerifiedPlayCatalog>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVerifiedPlayCatalogQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVerifiedPlayCatalog>>> = ({ signal }) => getVerifiedPlayCatalog({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVerifiedPlayCatalog>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVerifiedPlayCatalogQueryResult = NonNullable<Awaited<ReturnType<typeof getVerifiedPlayCatalog>>>
+export type GetVerifiedPlayCatalogQueryError = ErrorType<unknown>
+
+
+
+export function useGetVerifiedPlayCatalog<TData = Awaited<ReturnType<typeof getVerifiedPlayCatalog>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVerifiedPlayCatalog>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVerifiedPlayCatalogQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getVerifyGooglePlayPurchaseUrl = () => {
+
+
+
+
+  return `/api/billing/verify`
+}
+
+export const verifyGooglePlayPurchase = async (playReceiptInput: PlayReceiptInput, options?: Parameters<typeof customFetch>[1]): Promise<VerifyGooglePlayPurchase200> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<VerifyGooglePlayPurchase200>(getVerifyGooglePlayPurchaseUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(playReceiptInput)
+  }
+);}
+
+
+
+
+
+export const getVerifyGooglePlayPurchaseMutationKey = () => ['verifyGooglePlayPurchase'] as const;
+
+export const getVerifyGooglePlayPurchaseMutationOptions = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyGooglePlayPurchase>>, TError,VerifyGooglePlayPurchaseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof verifyGooglePlayPurchase>>, TError,VerifyGooglePlayPurchaseMutationVariables, TContext> => {
+
+const mutationKey = getVerifyGooglePlayPurchaseMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof verifyGooglePlayPurchase>>, VerifyGooglePlayPurchaseMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  verifyGooglePlayPurchase(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type VerifyGooglePlayPurchaseMutationResult = NonNullable<Awaited<ReturnType<typeof verifyGooglePlayPurchase>>>
+    export type VerifyGooglePlayPurchaseMutationBody = BodyType<PlayReceiptInput>
+    export type VerifyGooglePlayPurchaseMutationError = ErrorType<ApiError>
+    export type VerifyGooglePlayPurchaseMutationVariables = {data: BodyType<PlayReceiptInput>}
+
+    export const useVerifyGooglePlayPurchase = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyGooglePlayPurchase>>, TError,VerifyGooglePlayPurchaseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof verifyGooglePlayPurchase>>,
+        TError,
+        VerifyGooglePlayPurchaseMutationVariables,
+        TContext
+      > => {
+      return useMutation(getVerifyGooglePlayPurchaseMutationOptions(options));
+    }
+
+export const getReceiveGooglePlayNotificationUrl = () => {
+
+
+
+
+  return `/api/billing/google-play/notifications`
+}
+
+/**
+ * @summary Authenticate Google PubSub OIDC delivery, then re-query Google; notifications cannot grant access by assertion
+ */
+export const receiveGooglePlayNotification = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getReceiveGooglePlayNotificationUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getReceiveGooglePlayNotificationMutationKey = () => ['receiveGooglePlayNotification'] as const;
+
+export const getReceiveGooglePlayNotificationMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof receiveGooglePlayNotification>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof receiveGooglePlayNotification>>, TError,void, TContext> => {
+
+const mutationKey = getReceiveGooglePlayNotificationMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof receiveGooglePlayNotification>>, void> = () => {
+
+
+          return  receiveGooglePlayNotification(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReceiveGooglePlayNotificationMutationResult = NonNullable<Awaited<ReturnType<typeof receiveGooglePlayNotification>>>
+
+    export type ReceiveGooglePlayNotificationMutationError = ErrorType<void>
+
+
+    /**
+ * @summary Authenticate Google PubSub OIDC delivery, then re-query Google; notifications cannot grant access by assertion
+ */
+export const useReceiveGooglePlayNotification = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof receiveGooglePlayNotification>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof receiveGooglePlayNotification>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getReceiveGooglePlayNotificationMutationOptions(options));
+    }
+
 export const getCreateBillingSessionUrl = () => {
 
 
@@ -69,7 +451,7 @@ export const getCreateBillingSessionUrl = () => {
 }
 
 /**
- * @summary Establish a signed Android usage session without granting a subscription
+ * @summary Establish an Android session only after fresh Play Integrity attestation; no paid access is implied
  */
 export const createBillingSession = async (billingDeviceInput: BillingDeviceInput, options?: Parameters<typeof customFetch>[1]): Promise<CreateBillingSession200> => {
 
@@ -135,7 +517,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type CreateBillingSessionMutationVariables = {data: BodyType<BillingDeviceInput>}
 
     /**
- * @summary Establish a signed Android usage session without granting a subscription
+ * @summary Establish an Android session only after fresh Play Integrity attestation; no paid access is implied
  */
 export const useCreateBillingSession = <TError = ErrorType<ApiError>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBillingSession>>, TError,CreateBillingSessionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}

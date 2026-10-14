@@ -8,6 +8,18 @@
 export interface BillingDeviceInput {
   /** @pattern ^[a-f0-9]{64}$ */
   deviceId: string;
+  nonce: string;
+  integrityToken: string;
+}
+
+export interface PlayReceiptInput {
+  /**
+     * @minLength 5
+     * @maxLength 8192
+     */
+  purchaseToken: string;
+  nonce: string;
+  integrityToken: string;
 }
 
 export interface StoryIdeaInput {
@@ -139,6 +151,47 @@ export interface ComicProviders {
 export interface ApiError {
   error: string;
 }
+
+export type GetBillingConfiguration200 = {
+  version: number;
+  serviceCredentials: boolean;
+  projectNumber: string;
+  signingCertificates: boolean;
+  testPurchasesAllowed: boolean;
+};
+
+export type GetAndroidBillingChallengeParams = {
+purpose: GetAndroidBillingChallengePurpose;
+};
+
+export type GetAndroidBillingChallengePurpose = typeof GetAndroidBillingChallengePurpose[keyof typeof GetAndroidBillingChallengePurpose];
+
+
+export const GetAndroidBillingChallengePurpose = {
+  session: 'session',
+  generation: 'generation',
+  receipt: 'receipt',
+} as const;
+
+export type GetAndroidBillingChallenge200 = {
+  version: number;
+  nonce: string;
+  cloudProjectNumber: string;
+};
+
+export type GetVerifiedPlayCatalog200 = {
+  usdPrice: string;
+  billingPeriod: string;
+  productId: string;
+  basePlanId: string;
+};
+
+export type VerifyGooglePlayPurchase200 = {
+  verified: boolean;
+  subscribed: boolean;
+  expiresAt: string;
+  autoRenew: boolean;
+};
 
 export type CreateBillingSession200 = {
   version: number;

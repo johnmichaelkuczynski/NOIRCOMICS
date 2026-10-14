@@ -13,11 +13,116 @@ tags:
   - name: comics
     description: Comic generation
 paths:
+  /billing/config:
+    get:
+      operationId: getBillingConfiguration
+      tags: [comics]
+      responses:
+        "200":
+          description: Protocol version and presence of required configuration; never returns credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [version, serviceCredentials, projectNumber, signingCertificates, testPurchasesAllowed]
+                properties:
+                  version: { type: integer }
+                  serviceCredentials: { type: boolean }
+                  projectNumber: { type: string }
+                  signingCertificates: { type: boolean }
+                  testPurchasesAllowed: { type: boolean }
+  /billing/challenge:
+    get:
+      operationId: getAndroidBillingChallenge
+      tags: [comics]
+      parameters:
+        - in: query
+          name: purpose
+          required: true
+          schema:
+            type: string
+            enum: [session, generation, receipt]
+      responses:
+        "200":
+          description: One-use, short-lived, operation-bound Play Integrity challenge
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [version, nonce, cloudProjectNumber]
+                properties:
+                  version: { type: integer }
+                  nonce: { type: string }
+                  cloudProjectNumber: { type: string }
+        "503":
+          description: Google Play configuration is missing
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+  /billing/catalog:
+    get:
+      operationId: getVerifiedPlayCatalog
+      tags: [comics]
+      security: [{ NoirSession: [] }]
+      responses:
+        "200":
+          description: Active P1M auto-renewing monthly plan, verified at USD 4.95 in the US region
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [usdPrice, billingPeriod, productId, basePlanId]
+                properties:
+                  usdPrice: { type: string }
+                  billingPeriod: { type: string }
+                  productId: { type: string }
+                  basePlanId: { type: string }
+  /billing/verify:
+    post:
+      operationId: verifyGooglePlayPurchase
+      tags: [comics]
+      security: [{ NoirSession: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PlayReceiptInput" }
+      responses:
+        "200":
+          description: Google Developer API verified a paid, unexpired and acknowledged purchase
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [verified, subscribed, expiresAt, autoRenew]
+                properties:
+                  verified: { type: boolean }
+                  subscribed: { type: boolean }
+                  expiresAt: { type: string, format: date-time }
+                  autoRenew: { type: boolean }
+        "402":
+          description: No verified paid access
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "403":
+          description: Missing, invalid or replayed native receipt ownership proof
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+  /billing/google-play/notifications:
+    post:
+      operationId: receiveGooglePlayNotification
+      tags: [comics]
+      summary: Authenticate Google PubSub OIDC delivery, then re-query Google; notifications cannot grant access by assertion
+      responses:
+        "204": { description: Notification processed idempotently }
+        "401": { description: Unauthenticated delivery rejected }
   /billing/session:
     post:
       operationId: createBillingSession
       tags: [comics]
-      summary: Establish a signed Android usage session without granting a subscription
+      summary: Establish an Android session only after fresh Play Integrity attestation; no paid access is implied
       requestBody:
         required: true
         content:
@@ -78,6 +183,7 @@ paths:
               schema: { $ref: "#/components/schemas/ApiError" }
   /comics/script:
     post:
+      security: [{ NoirSession: [], NoirIntegrity: [], NoirNonce: [] }]
       operationId: writeComicScript
       tags: [comics]
       summary: Develop a story idea into an editable script without generating images
@@ -108,6 +214,7 @@ paths:
                 $ref: "#/components/schemas/ApiError"
   /comics/transcribe:
     post:
+      security: [{ NoirSession: [], NoirIntegrity: [], NoirNonce: [] }]
       operationId: transcribeComicAudio
       tags: [comics]
       summary: Use AssemblyAI to transcribe a temporary microphone recording into input text
@@ -199,6 +306,7 @@ paths:
                 $ref: "#/components/schemas/HealthStatus"
   /comics/generate:
     post:
+      security: [{ NoirSession: [], NoirIntegrity: [], NoirNonce: [] }]
       operationId: generateComic
       tags: [comics]
       summary: Generate a noir comic from text
@@ -229,14 +337,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiError"
 components:
+  securitySchemes:
+    NoirSession: { type: apiKey, in: header, name: X-Noir-Session }
+    NoirIntegrity: { type: apiKey, in: header, name: X-Noir-Integrity }
+    NoirNonce: { type: apiKey, in: header, name: X-Noir-Nonce }
   schemas:
     BillingDeviceInput:
       type: object
-      required: [deviceId]
+      required: [deviceId, nonce, integrityToken]
       properties:
         deviceId:
           type: string
           pattern: "^[a-f0-9]{64}$"
+        nonce: { type: string }
+        integrityToken: { type: string }
+    PlayReceiptInput:
+      type: object
+      required: [purchaseToken, nonce, integrityToken]
+      properties:
+        purchaseToken: { type: string, minLength: 5, maxLength: 8192 }
+        nonce: { type: string }
+        integrityToken: { type: string }
     StoryIdeaInput:
       type: object
       properties:

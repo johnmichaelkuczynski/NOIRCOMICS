@@ -9,4 +9,6 @@
 export interface BillingDeviceInput {
   /** @pattern ^[a-f0-9]{64}$ */
   deviceId: string;
+  nonce: string;
+  integrityToken: string;
 }

@@ -27,7 +27,9 @@ app.use(
   }),
 );
 app.use(cors());
-app.use(express.json({ limit: "16mb" }));
+app.use(express.json({ limit: "16mb", verify(req, _res, bytes) {
+  (req as typeof req & { rawBody?: Buffer }).rawBody = Buffer.from(bytes);
+} }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);

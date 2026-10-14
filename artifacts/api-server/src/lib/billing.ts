@@ -1,28 +1,27 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import type { Request } from "express";
 import { pool } from "@workspace/db";
-import { ReplitConnectors } from "@replit/connectors-sdk";
+import { googleMembership } from "./google-play";
+import { verifyGeneration } from "./play-integrity";
 import { ComicServiceError } from "./comic-providers";
 
-export const BILLING_VERSION = 2;
+export const BILLING_VERSION = 3;
 export const FREE_LIMITS = { panels: 12, scripts: 2, voices: 12 };
 // Conservative cost ceiling. Never advertise unlimited AI generation.
 export const PAID_LIMITS = { panels: 24, scripts: 20, voices: 30 };
-const RC_PROJECT = "proj36b45ee7";
-const PREMIUM_ENTITLEMENT = "entl40ee021c02";
 type Kind = keyof typeof FREE_LIMITS;
 type Counts = Record<Kind, number>;
 type Identity = { customerId: string; native: boolean; network: string };
 type Row = { key: string; reserved_until: Date | null } & Counts &
   { pending_panels: number; pending_scripts: number; pending_voices: number;
     attempted_panels: number; attempted_scripts: number; attempted_voices: number };
-type Tier = { subscribed: boolean; period: string };
+type Tier = { subscribed: boolean; period: string; accountId?: string; expiresAt?: string; autoRenew?: boolean };
 
 function hash(value: string) { return createHash("sha256").update(value).digest("hex"); }
 function signature(value: string) {
   const secret = process.env.SESSION_SECRET;
   if (!secret) throw new ComicServiceError("Generation is blocked because secure billing is unavailable.", 503);
-  return createHmac("sha256", secret).update(`noir-billing-v2:${value}`).digest("hex");
+  return createHmac("sha256", secret).update(`noir-billing-v3:${value}`).digest("hex");
 }
 function network(req: Request) { return hash(req.ip || req.socket.remoteAddress || "unknown"); }
 export function issueSession(deviceId: string) {
@@ -47,16 +46,7 @@ export function identify(req: Request): Identity {
 export async function membership(identity: Identity): Promise<Tier> {
   if (!identity.native) return { subscribed: false, period: "" };
   try {
-    const response = await new ReplitConnectors().proxy("revenuecat",
-      `/v2/projects/${RC_PROJECT}/customers/${encodeURIComponent(identity.customerId)}/active_entitlements`,
-      { method: "GET" });
-    if (response.status === 404) return { subscribed: false, period: "" };
-    if (!response.ok) throw new Error("Verification unavailable");
-    const body = await response.json() as { items?: { entitlement_id?: string; expires_at?: number | null }[] };
-    if (!Array.isArray(body.items)) throw new Error("Invalid subscription response");
-    const premium = body.items.find(item => item.entitlement_id === PREMIUM_ENTITLEMENT &&
-      (item.expires_at == null || item.expires_at > Date.now()));
-    return { subscribed: !!premium, period: String(premium?.expires_at ?? new Date().toISOString().slice(0, 7)) };
+    return await googleMembership(identity.customerId);
   } catch {
     // No trusted subscription response means no paid entitlement, never free access.
     throw new ComicServiceError("Subscription verification is unavailable. Generation is blocked to protect your account; try again later.", 503);
@@ -64,7 +54,7 @@ export async function membership(identity: Identity): Promise<Tier> {
 }
 
 function buckets(identity: Identity, tier: Tier) {
-  if (tier.subscribed) return [{ key: `paid:${identity.customerId}:${tier.period}`, limits: PAID_LIMITS }];
+  if (tier.subscribed) return [{ key: `paid:${tier.accountId || identity.customerId}:${tier.period}`, limits: PAID_LIMITS }];
   return [
     { key: `trial:${identity.customerId}`, limits: FREE_LIMITS },
     // Stops clearing app data/changing trial identifiers from creating free requests.
@@ -87,6 +77,7 @@ function attemptLimit(key: string, cap: number) {
 
 export async function usage(req: Request) {
   const identity = identify(req);
+  if (!identity.native) throw new ComicServiceError("An authenticated Android session is required.", 401);
   const tier = await membership(identity);
   const scopes = buckets(identity, tier);
   const rows = await pool.query<Row>("SELECT * FROM billing_usage WHERE key = ANY($1::text[])", [scopes.map(s => s.key)]);
@@ -96,7 +87,7 @@ export async function usage(req: Request) {
   ])) as Counts;
   return { version: BILLING_VERSION, customerId: identity.customerId, subscribed: tier.subscribed,
     remaining: available, limits: tier.subscribed ? PAID_LIMITS : FREE_LIMITS,
-    monthlyLimits: PAID_LIMITS };
+    monthlyLimits: PAID_LIMITS, expiresAt: tier.expiresAt || null, autoRenew: !!tier.autoRenew };
 }
 
 // Exported separately to test concurrent credit reservations without paid AI calls.
@@ -148,6 +139,8 @@ export async function reserveCredits(identity: Identity, tier: Tier, kind: Kind,
 export async function reserveForRequest(req: Request, kind: Kind, amount: number) {
   try {
     const identity = identify(req);
+    if (!identity.native) throw new ComicServiceError("Generation requires a verified Android app session. Anonymous legacy requests are not allowed.", 401);
+    await verifyGeneration(req, identity.customerId);
     return await reserveCredits(identity, await membership(identity), kind, amount);
   } catch (error) {
     if (error instanceof ComicServiceError) throw error;

@@ -75,11 +75,18 @@ Converts a short essay or story into a selected number of black-and-white film-n
 - Billing failures must block further generation, not silently grant free use.
   Store activation and backend publication are separate release prerequisites;
   an AAB containing purchase controls is not proof that payments are active.
+- The user requires direct server-side Google Play Developer API verification,
+  including payment, renewals, cancellation, expiration, refunds and restore.
+  Do not substitute RevenueCat entitlement responses for that requirement.
+- Do not report the subscription release complete until verification has passed.
+  Clearly distinguish fixture/browser tests from live Play-store purchases.
 
 ## Generation cost protection
 
 - Shared public generation routes enforce persistent usage reservations before
-  contacting AI providers; the PC interface itself is unchanged.
+  contacting AI providers and now require a licensed Android app/device proof.
+  The PC interface layout is unchanged, but anonymous web generation is blocked
+  because it would bypass the Android paywall.
 - Anonymous device/network trial limits and a bounded aggregate introductory
   budget prevent unmetered public requests. Failed attempts have separate
   processing ceilings, and transcription is limited server-side to five minutes.

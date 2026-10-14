@@ -81,6 +81,12 @@ test("a forged device session cannot select a paid account", () => {
   assert.equal(identify(request(session.token)).customerId, session.customerId);
   assert.throws(() => identify(request(`${session.customerId}.${"0".repeat(64)}`)), { status: 401 });
 });
+test("reissuing a session for the same installed-device identifier does not create another trial identity", () => {
+  const beforeReinstall = issueSession("c".repeat(64));
+  const afterReinstall = issueSession("c".repeat(64));
+  assert.equal(beforeReinstall.customerId, afterReinstall.customerId);
+  assert.equal(beforeReinstall.token, afterReinstall.token);
+});
 test("excess panel requests and invalid reservations never reserve credits", async () => {
   await assert.rejects(reserve("oversized", "panels", 25), { status: 402 });
   await assert.rejects(reserve("negative", "panels", -1));
