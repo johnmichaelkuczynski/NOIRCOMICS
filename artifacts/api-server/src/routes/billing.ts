@@ -21,7 +21,10 @@ router.get("/billing/challenge", async (req, res) => {
     const identity = purpose === "session" ? undefined : identify(req);
     if (identity && !identity.native) throw new ComicServiceError("An authenticated Android session is required.", 401);
     res.json(await challenge(req, purpose, identity?.customerId));
-  } catch (error) { fail(res, error); }
+  } catch (error) {
+    req.log.error({ err: error, purpose }, "Android billing challenge failed");
+    fail(res, error);
+  }
 });
 router.post("/billing/session", async (req, res) => {
   const deviceId = req.body?.deviceId;

@@ -26,7 +26,7 @@ export function checkIntegrityPayload(payload: any, expectedHash: string, certif
   if (details?.requestPackageName !== PLAY_PACKAGE || details?.requestHash !== expectedHash ||
     !Number.isFinite(timestamp) || Math.abs(now - timestamp) > 120_000 ||
     app?.packageName !== PLAY_PACKAGE || app?.appRecognitionVerdict !== "PLAY_RECOGNIZED" ||
-    !/^\d+$/.test(String(app?.versionCode)) || Number(app.versionCode) < 4 ||
+    !/^\d+$/.test(String(app?.versionCode)) || Number(app.versionCode) < 1 ||
     !Array.isArray(app?.certificateSha256Digest) || !app.certificateSha256Digest.some((cert: string) => certificates.includes(cert)) ||
     !Array.isArray(payload?.deviceIntegrity?.deviceRecognitionVerdict) ||
     !payload.deviceIntegrity.deviceRecognitionVerdict.includes("MEETS_DEVICE_INTEGRITY") ||

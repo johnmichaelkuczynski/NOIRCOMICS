@@ -122,13 +122,20 @@ function integrity() {
 test("licensed, recognized app/device and bound request pass attestation policy", () => {
   checkIntegrityPayload(integrity(), "fixture-hash", ["fixture-cert"]);
 });
+for (const versionCode of ["1", "2"]) {
+  test(`new Play app versionCode ${versionCode} passes attestation policy`, () => {
+    const data = integrity();
+    data.appIntegrity.versionCode = versionCode;
+    checkIntegrityPayload(data, "fixture-hash", ["fixture-cert"]);
+  });
+}
 for (const tamper of ["hash", "package", "certificate", "old-version", "license", "device", "timestamp"]) {
   test(`attestation rejects tampered ${tamper}`, () => {
     const data = integrity();
     if (tamper === "hash") data.requestDetails.requestHash = "forged";
     if (tamper === "package") data.appIntegrity.packageName = "another.app";
     if (tamper === "certificate") data.appIntegrity.certificateSha256Digest = ["forged"];
-    if (tamper === "old-version") data.appIntegrity.versionCode = "2";
+    if (tamper === "old-version") data.appIntegrity.versionCode = "0";
     if (tamper === "license") data.accountDetails.appLicensingVerdict = "UNLICENSED";
     if (tamper === "device") data.deviceIntegrity.deviceRecognitionVerdict = [];
     if (tamper === "timestamp") data.requestDetails.timestampMillis = "1";
