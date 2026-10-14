@@ -38,13 +38,16 @@ function Home() {
   const [preparing, setPreparing] = useState(false);
   const [dictating, setDictating] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
+  const [draftIdea, setDraftIdea] = useState('');
+  const [regenerating, setRegenerating] = useState(false);
+  const [regenerationError, setRegenerationError] = useState('');
   const draftRef = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const mutation = useGenerateComic();
   const scriptMutation = useWriteComicScript();
   const comic = mutation.data;
   const isGenerating = preparing || mutation.isPending;
-  const isBusy = isGenerating || scriptMutation.isPending || dictating;
+  const isBusy = isGenerating || scriptMutation.isPending || dictating || regenerating;
   useEffect(() => {
     if (scriptMutation.data) draftRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, [scriptMutation.data]);
@@ -119,14 +122,40 @@ function Home() {
   async function writeFromIdea() {
     if (isBusy || !text.trim()) return;
     setLocalError('');
+    setRegenerationError('');
     if (text.length > 8000 || !Number.isInteger(panelCount) || panelCount < 1 || panelCount > 24) {
       setLocalError('Use up to 8,000 characters and choose a whole number from 1 to 24 panels.');
       return;
     }
     try {
-      setDraft(await scriptMutation.mutateAsync({ data: { idea: text.trim(), panelCount } }));
+      const originalIdea = text.trim();
+      const result = await scriptMutation.mutateAsync({ data: { idea: originalIdea, panelCount } });
+      setDraft(result);
+      setDraftIdea(originalIdea);
     } catch (error) {
       setLocalError(getErrorMessage(error, 'The script could not be written. Your original idea is unchanged.'));
+    }
+  }
+
+  async function createNewVersion() {
+    if (isBusy || !draft || !draftIdea) return;
+    setLocalError('');
+    setRegenerationError('');
+    if (!Number.isInteger(panelCount) || panelCount < 1 || panelCount > 24) {
+      setRegenerationError('Choose a whole number from 1 to 24 panels before creating another version.');
+      return;
+    }
+    setRegenerating(true);
+    try {
+      const previousScript = draft.script.trim() || scriptMutation.data?.script;
+      const result = await scriptMutation.mutateAsync({
+        data: { idea: draftIdea, panelCount, ...(previousScript ? { previousScript } : {}) },
+      });
+      setDraft(result);
+    } catch (error) {
+      setRegenerationError(getErrorMessage(error, 'The new version could not be written. Your current script is unchanged; try again.'));
+    } finally {
+      setRegenerating(false);
     }
   }
 
@@ -194,7 +223,7 @@ function Home() {
                 <span data-testid="text-character-count">{text.length.toLocaleString()} / 8,000</span>
               </div>
               <input ref={fileInput} className="upload-input" data-testid="input-story-file" type="file" accept=".txt,.md,text/plain,text/markdown" onChange={readFile} />
-              <DictationControl disabled={isGenerating || scriptMutation.isPending} onBusyChange={setDictating} onTranscript={appendDictation} />
+              <DictationControl disabled={isGenerating || scriptMutation.isPending || regenerating} onBusyChange={setDictating} onTranscript={appendDictation} />
               <div className="idea-action">
                 <button type="button" className="script-write-button" data-testid="button-write-script" disabled={isBusy || !text.trim()} onClick={writeFromIdea}>
                   <PenLine size={15} /> {scriptMutation.isPending ? 'Writing your script…' : 'Write script from idea'}
@@ -249,8 +278,8 @@ function Home() {
           </form>
 
           <section className="result-area" aria-live="polite">
-            {scriptMutation.isPending && <div className="script-writing" role="status" data-testid="status-script-writing"><span className="loading-mark" /> Developing your idea into a complete script. No images are being generated.</div>}
-            {draft && <div ref={draftRef}><ScriptDraft draft={draft} disabled={isBusy} onChange={script => setDraft(previous => previous ? { ...previous, script } : previous)} onGenerate={() => { void generateFromText(draft.script); }} /></div>}
+            {scriptMutation.isPending && <div className="script-writing" role="status" data-testid="status-script-writing"><span className="loading-mark" /> {regenerating ? 'Writing a different version from your original idea.' : 'Developing your idea into a complete script.'} No images are being generated.</div>}
+            {draft && <div ref={draftRef}><ScriptDraft draft={draft} disabled={isBusy} regenerating={regenerating} regenerationError={regenerationError} onRegenerate={() => { void createNewVersion(); }} onChange={script => setDraft(previous => previous ? { ...previous, script } : previous)} onGenerate={() => { void generateFromText(draft.script); }} /></div>}
             <div className="result-heading">
               <div>
                 <h2>Your comic</h2>

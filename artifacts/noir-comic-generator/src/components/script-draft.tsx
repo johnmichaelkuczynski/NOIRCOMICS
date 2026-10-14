@@ -1,14 +1,17 @@
-import { Download, ArrowUpRight } from 'lucide-react';
+import { Download, ArrowUpRight, RefreshCw } from 'lucide-react';
 import type { ScriptDraft as Draft } from '@workspace/api-client-react';
 
 type Props = {
   draft: Draft;
   disabled: boolean;
+  regenerating: boolean;
+  regenerationError: string;
+  onRegenerate: () => void;
   onChange: (script: string) => void;
   onGenerate: () => void;
 };
 
-export function ScriptDraft({ draft, disabled, onChange, onGenerate }: Props) {
+export function ScriptDraft({ draft, disabled, regenerating, regenerationError, onRegenerate, onChange, onGenerate }: Props) {
   function download() {
     const url = URL.createObjectURL(new Blob([`${draft.title}\n\n${draft.script}`], { type: 'text/plain;charset=utf-8' }));
     const link = document.createElement('a');
@@ -23,7 +26,10 @@ export function ScriptDraft({ draft, disabled, onChange, onGenerate }: Props) {
     <section className="script-draft" data-testid="result-script">
       <div className="eyebrow">From idea to script</div>
       <h2>{draft.title}</h2>
-      <p>Your script is ready. Edit it, download it, or choose to turn it into noir comics. Your original idea stays in the input.</p>
+      <p>Your script is ready. Edit it, download it, create another version, or choose to turn it into noir comics.</p>
+      <button type="button" className="script-write-button" data-testid="button-new-script-version" disabled={disabled} onClick={onRegenerate}><RefreshCw size={15} /> {regenerating ? 'Creating new version…' : 'Create new version'}</button>
+      <p className="usage-note">Get a different take on the original idea—no retyping or dictation needed. Comics remain optional.</p>
+      {regenerationError && <div className="error-box" role="alert" data-testid="status-regeneration-error">{regenerationError}</div>}
       <label htmlFor="generated-script" className="script-label">Your editable script</label>
       <textarea id="generated-script" className="source-area script-text" data-testid="input-generated-script" value={draft.script} onChange={event => onChange(event.target.value)} disabled={disabled} maxLength={8000} />
       <div className="script-actions">

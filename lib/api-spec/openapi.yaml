@@ -170,6 +170,11 @@ components:
     StoryIdeaInput:
       type: object
       properties:
+        previousScript:
+          type: string
+          minLength: 1
+          maxLength: 8000
+          description: Optional previous version to avoid repeating when developing the same original idea.
         idea:
           type: string
           minLength: 1

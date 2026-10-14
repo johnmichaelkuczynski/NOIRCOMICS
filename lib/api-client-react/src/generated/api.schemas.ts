@@ -7,6 +7,12 @@
  */
 export interface StoryIdeaInput {
   /**
+     * Optional previous version to avoid repeating when developing the same original idea.
+     * @minLength 1
+     * @maxLength 8000
+     */
+  previousScript?: string;
+  /**
      * @minLength 1
      * @maxLength 8000
      */

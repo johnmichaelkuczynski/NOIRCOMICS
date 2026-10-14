@@ -39,6 +39,7 @@ Converts a short essay or story into a selected number of black-and-white film-n
 - Automatic routing sends supported non-explicit mature themes to Venice and ordinary content to OpenAI. Explicit sexual content is rejected before adaptation or image requests; Venice safe mode stays enabled. **Why:** the integration's agreed scope is non-explicit content, not a pornography mode or safety bypass.
 - Dictation uses AssemblyAI, not OpenAI transcription or browser-only speech recognition. **Why:** the user explicitly chose AssemblyAI and wants voice entry suitable for an eventual phone app.
 - Developing an idea into a new script is a separate action from faithfully adapting existing writing into comic panels. Script-only generation never requests images. **Why:** the user wants to review a script and independently choose whether to make comics.
+- Script regeneration reuses the idea captured when that script was created, not the input's current contents. **Why:** the user wants another version without retyping or redictating, even if the input has since changed. Keep the existing draft until its replacement succeeds.
 
 ## Product
 
@@ -49,6 +50,7 @@ Converts a short essay or story into a selected number of black-and-white film-n
 - Venice connectivity is checked against its authenticated rate-limit/access endpoint and model catalog. No credentials or balances are returned to the browser.
 - Dictate into the existing input, stop to transcribe, edit the words, and retry failed transcription without recording again. Recordings are capped at five minutes/12 MB and held temporarily, not saved by this app.
 - Develop an arbitrary story idea into an editable, downloadable script. The original idea remains intact; a separate button generates comics from the edited script using the selected panel count and provider.
+- “Create new version” requests a different script from the same original idea, uses the current panel count, and never automatically generates images.
 
 ## User preferences
 

@@ -15,7 +15,7 @@ router.post("/comics/script", async (req, res): Promise<void> => {
     return;
   }
   try {
-    res.json(WriteComicScriptResponse.parse(await developStoryIdea(input.data.idea, input.data.panelCount)));
+    res.json(WriteComicScriptResponse.parse(await developStoryIdea(input.data.idea, input.data.panelCount, input.data.previousScript)));
   } catch (error) {
     const status = error instanceof ComicServiceError ? error.status : 500;
     const message = error instanceof ComicServiceError ? error.message : "Script writing failed. Your idea is unchanged; please try again.";

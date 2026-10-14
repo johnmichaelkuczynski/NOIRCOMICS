@@ -32,6 +32,9 @@ Dictate your script or idea. AssemblyAI adds your words to the input when you st
 **An idea is enough**  
 Start with a premise and get an editable script with scenes, action, and dialogue. Making comics afterward is your choice, not a requirement.
 
+**Another take, one click away**  
+Not the script you had in mind? Choose “Create new version” for a fresh take on the same original idea. No retyping. No need to dictate again.
+
 **More than fiction**  
 Bring a short story, an essay, a philosophical argument, or a conversation. The experience is designed to keep your original meaning at the center.
 

@@ -11,6 +11,8 @@ import * as zod from 'zod';
 /**
  * @summary Develop a story idea into an editable script without generating images
  */
+export const writeComicScriptBodyPreviousScriptMax = 8000;
+
 export const writeComicScriptBodyIdeaMax = 8000;
 
 export const writeComicScriptBodyPanelCountMax = 24;
@@ -18,6 +20,7 @@ export const writeComicScriptBodyPanelCountMax = 24;
 
 
 export const WriteComicScriptBody = zod.object({
+  "previousScript": zod.string().min(1).max(writeComicScriptBodyPreviousScriptMax).optional().describe('Optional previous version to avoid repeating when developing the same original idea.'),
   "idea": zod.string().min(1).max(writeComicScriptBodyIdeaMax),
   "panelCount": zod.number().int().min(1).max(writeComicScriptBodyPanelCountMax)
 })
