@@ -126,3 +126,17 @@ mtime_ms = 1791996643871
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/2ef348aa-f495-4425-9bfd-517b19405c52/1469fd35-88c7-4302-abf9-58e4bbb089e2"
 storage_version_token = "1791996769147966"
 content_type = "text/plain"
+
+[[outputs]]
+id = "hWyhhwR2pgJutOG1WyXNW"
+uri = "file://generated-artifacts/android/noir-comic-generator-android-1.3.1.aab"
+type = "unspecified"
+title = "Noir Comic Creator — rebuilt signed AAB 1.3.1"
+description = "Version code 5. Signed with the existing upload key; Android build, lint task, signature verification and bundle validation passed. For internal testing; existing backend and billing activation blockers remain."
+logical_id = "218800ff-85d4-4406-ba6f-dce8c16e79ea"
+content_hash = "sha256:1a47f76efb248a35deb8066356e0849f055c391044aaa417b6aa8bbcf431b18e"
+size = 6663660
+mtime_ms = 1791999924408
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/218800ff-85d4-4406-ba6f-dce8c16e79ea/d51dcf0d-19ff-4520-b6be-06f5cd93ee97"
+storage_version_token = "1791999946625941"
+content_type = "application/octet-stream"
