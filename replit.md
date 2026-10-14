@@ -69,6 +69,22 @@ Converts a short essay or story into a selected number of black-and-white film-n
 - Keep Noir's subscription catalog separate from other apps in the connected
   RevenueCat account. Use Google Play for Android in-app subscriptions; do not
   add Stripe or change the PC interface as part of the Android billing request.
+- Do not deliver an unrestricted free Android build as a substitute for the
+  requested subscription release. **Why:** the user explicitly rejected it
+  because public AI generation would incur their API costs.
+- Billing failures must block further generation, not silently grant free use.
+  Store activation and backend publication are separate release prerequisites;
+  an AAB containing purchase controls is not proof that payments are active.
+
+## Generation cost protection
+
+- Shared public generation routes enforce persistent usage reservations before
+  contacting AI providers; the PC interface itself is unchanged.
+- Anonymous device/network trial limits and a bounded aggregate introductory
+  budget prevent unmetered public requests. Failed attempts have separate
+  processing ceilings, and transcription is limited server-side to five minutes.
+- Paid allowances are conservative implementation defaults, not user-confirmed
+  subscription terms. Do not promise unlimited AI generation at $4.95/month.
 
 - The user assumes short texts for now; short, information-dense writing may still need many panels.
 - Match the provided photographic black-and-white noir comic style, rather than a generic illustrated comic style.

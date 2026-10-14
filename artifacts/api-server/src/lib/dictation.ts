@@ -39,7 +39,7 @@ export async function transcribeRecording(audio: Buffer, requestSignal: AbortSig
     let result = await assemblyJson(await fetch(`${ASSEMBLY_BASE_URL}/transcript`, {
       method: "POST",
       headers: { ...authorization, "Content-Type": "application/json" },
-      body: JSON.stringify({ audio_url: upload.upload_url, language_detection: true, punctuate: true, format_text: true }),
+      body: JSON.stringify({ audio_url: upload.upload_url, audio_end_at: 300_000, language_detection: true, punctuate: true, format_text: true }),
       signal,
     }));
     if (typeof result.id !== "string" || !/^[a-zA-Z0-9_-]{1,100}$/.test(result.id)) {

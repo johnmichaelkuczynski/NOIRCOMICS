@@ -5,6 +5,11 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export interface BillingDeviceInput {
+  /** @pattern ^[a-f0-9]{64}$ */
+  deviceId: string;
+}
+
 export interface StoryIdeaInput {
   /**
      * Optional previous version to avoid repeating when developing the same original idea.
@@ -134,4 +139,25 @@ export interface ComicProviders {
 export interface ApiError {
   error: string;
 }
+
+export type CreateBillingSession200 = {
+  version: number;
+  customerId: string;
+  token: string;
+};
+
+export type GetBillingUsage200Remaining = {[key: string]: number};
+
+export type GetBillingUsage200Limits = {[key: string]: number};
+
+export type GetBillingUsage200MonthlyLimits = {[key: string]: number};
+
+export type GetBillingUsage200 = {
+  version: number;
+  customerId: string;
+  subscribed: boolean;
+  remaining: GetBillingUsage200Remaining;
+  limits: GetBillingUsage200Limits;
+  monthlyLimits: GetBillingUsage200MonthlyLimits;
+};
 

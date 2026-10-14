@@ -4,6 +4,7 @@ import { createComic, ComicServiceError } from "../lib/comic-generator";
 import { getComicProviderStatus } from "../lib/comic-providers";
 import { developStoryIdea } from "../lib/script-writer";
 import { AUDIO_TYPES, transcribeRecording } from "../lib/dictation";
+import { reserveForRequest } from "../lib/billing";
 
 const router: IRouter = Router();
 const parseAudio = raw({ type: [...AUDIO_TYPES], limit: "12mb" });
@@ -14,13 +15,19 @@ router.post("/comics/script", async (req, res): Promise<void> => {
     res.status(400).json({ error: "Describe a story idea using up to 8,000 characters and choose 1–24 panels." });
     return;
   }
+  let credit: Awaited<ReturnType<typeof reserveForRequest>> | undefined;
   try {
-    res.json(WriteComicScriptResponse.parse(await developStoryIdea(input.data.idea, input.data.panelCount, input.data.previousScript)));
+    credit = await reserveForRequest(req, "scripts", 1);
+    const script = WriteComicScriptResponse.parse(await developStoryIdea(input.data.idea, input.data.panelCount, input.data.previousScript));
+    await credit.finish(1);
+    res.json(script);
   } catch (error) {
     const status = error instanceof ComicServiceError ? error.status : 500;
     const message = error instanceof ComicServiceError ? error.message : "Script writing failed. Your idea is unchanged; please try again.";
     req.log.error({ status, message }, "Script writing failed");
     res.status(status).json({ error: message });
+  } finally {
+    if (credit) await credit.finish(0).catch(() => req.log.error("Script credit release failed"));
   }
 });
 
@@ -46,10 +53,13 @@ router.post("/comics/transcribe", (req, res, next) => {
     return;
   }
   const controller = new AbortController();
+  let credit: Awaited<ReturnType<typeof reserveForRequest>> | undefined;
   const cancel = () => { if (!res.writableEnded) controller.abort(); };
   res.on("close", cancel);
   try {
+    credit = await reserveForRequest(req, "voices", 1);
     const transcript = await transcribeRecording(req.body, controller.signal);
+    await credit.finish(1);
     if (!res.destroyed) res.json(TranscribeComicAudioResponse.parse(transcript));
   } catch (error) {
     if (res.destroyed) return;
@@ -58,6 +68,7 @@ router.post("/comics/transcribe", (req, res, next) => {
     req.log.error({ status, message }, "Dictation failed");
     res.status(status).json({ error: message });
   } finally {
+    if (credit) await credit.finish(0).catch(() => req.log.error("Dictation credit release failed"));
     res.off("close", cancel);
   }
 });
@@ -73,9 +84,12 @@ router.post("/comics/generate", async (req, res): Promise<void> => {
     return;
   }
 
+  let credit: Awaited<ReturnType<typeof reserveForRequest>> | undefined;
   try {
-    const comic = await createComic(input.data);
-    res.json(GenerateComicResponse.parse(comic));
+    credit = await reserveForRequest(req, "panels", input.data.panelCount);
+    const comic = GenerateComicResponse.parse(await createComic(input.data));
+    await credit.finish(comic.panels.length);
+    res.json(comic);
   } catch (error) {
     const status = error instanceof ComicServiceError ? error.status : 500;
     const message = error instanceof ComicServiceError
@@ -83,6 +97,8 @@ router.post("/comics/generate", async (req, res): Promise<void> => {
       : "Comic generation failed. Please try again.";
     req.log.error({ status, message }, "Comic generation failed");
     res.status(status).json({ error: message });
+  } finally {
+    if (credit) await credit.finish(0).catch(() => req.log.error("Panel credit release failed"));
   }
 });
 

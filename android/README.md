@@ -1,43 +1,58 @@
 # Noir Comic Generator — Android release
 
-## Monetization change pending
+## Usage-limited build; store activation still pending
 
-The delivered version 1.0.0 does not contain usage limits or purchases and must
-not be released as the subscription build. The requested replacement is free
-to install, with an introductory allowance of approximately 12 panels and one
-or two screenplay generations, followed by approximately $4.95/month.
-The initial working defaults are 12 panels and two screenplay generations,
-including regenerated versions. Paid monthly generation allowances remain to
-be determined; do not advertise unlimited AI generation.
+Version 1.0.0 was unrestricted and must not be used for the commercial release.
+Version 1.1.0 includes native RevenueCat/Google Play purchase and restore
+controls, signed device sessions, and server-enforced usage reservations.
+The introductory defaults are 12 panels, two script generations (including
+new versions), and 12 five-minute dictations. The conservative paid defaults
+are 24 panels, 20 scripts and 30 dictations per verified billing period;
+these paid amounts are implementation defaults, not confirmed user requirements.
+Failed attempts have bounded processing budgets too. No unlimited-generation
+plan or billing-error fallback is enabled.
 
-RevenueCat is connected for subscription management. Google Play authorization
-and the Noir app's real store product configuration are still needed.
-Do not change any other app's existing RevenueCat catalog.
+Noir has a separate RevenueCat project, Android app, premium entitlement,
+monthly offering and product mapping. Actual payments are NOT live.
+Create Google Play subscription `noir_monthly_v1` with a one-month
+auto-renewing base plan `monthly`, set the intended USD $4.95 price, and
+configure Google Play service-account credentials in Noir's RevenueCat app.
+This is not the optional Replit Google Play OAuth connector; that connector
+failed authorization and its current setup notes document an incorrect API host.
+Store credentials belong in RevenueCat's secure credential settings, not chat
+or this repository. Do not change other apps' RevenueCat catalogs.
 
-This is a separate Android application; the approved PC interface and backend
-source are not changed by packaging it.
+This is a separate Android application; the approved PC interface is unchanged.
+The shared backend now enforces usage and aggregate introductory spend limits
+on all public generation routes to prevent bypass through unmetered web requests.
+Device/network anti-abuse limits and an aggregate monthly introductory budget
+may reduce effective free allowances. Purchases are verified on the server;
+client purchase claims alone never unlock generation.
 
 The Android app bundles a production build of the approved PC interface, loads
 it in an HTTPS-origin Android WebView, and calls the published server. OpenAI,
 AssemblyAI and Venice credentials stay exclusively on the server.
 
 - Android package: `ink.noircomics.app`
-- Version: `1.0.0` / version code `1`
+- Version: `1.1.0` / version code `2`
 - Minimum Android: 10 (API 29)
 - Target and compile Android: 16 (API 36)
 - Recording permission: microphone only, requested when dictation is used
 - Files: native Android document picker for imports; downloads saved directly
   to `Downloads/NoirComics` without broad storage permission
 - Recording stops when the app leaves the foreground
-- No payments, login wall, background music, tracking SDK, or native `.so` libraries
+- Native Google Play subscriptions through RevenueCat; no login entry wall,
+  background music, or native `.so` libraries
 
 ## Backend release prerequisite
 
 The verified production origin is `https://noircomics.ink`.
-At packaging time, its `/api/comics/script` endpoint returned HTTP 404.
-The approved web/backend version must be republished before the Android
-script, new-version and AssemblyAI features can work against production.
-Publishing the approved version does not require redesigning the PC app.
+The new billing-enabled backend and its database schema must be published.
+Android requires `/api/billing/session` and `/api/billing/usage` protocol version
+2 before it sends generation requests. An older/unavailable backend blocks
+generation instead of falling back to unmetered endpoints.
+Publishing this backend is separate from uploading the AAB to Google Play;
+the user handles both publishing decisions. No Google Play upload is automated.
 
 ## Building
 
@@ -52,7 +67,7 @@ Run Gradle from this directory with:
 `gradle :app:bundleRelease -PappOrigin=https://noircomics.ink`
 
 Then run `node android/tools/sign-bundle.mjs` from the workspace root. The
-result is `generated-artifacts/android/noir-comic-generator-android-1.0.0.aab`.
+result is `generated-artifacts/android/noir-comic-generator-android-1.1.0.aab`.
 
 Provide the SDK through `ANDROID_HOME`. A local `aapt2` may be selected using
 `-Pandroid.aapt2FromMavenOverride=/path/to/aapt2`. This workspace provides an

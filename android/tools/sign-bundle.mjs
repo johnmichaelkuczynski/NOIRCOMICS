@@ -9,7 +9,7 @@ const keyDirectory = resolve(workspace, '.android-signing');
 const keyPath = resolve(keyDirectory, 'noir-upload.p12');
 const configurationPath = resolve(keyDirectory, 'key-config.json');
 const source = resolve(process.argv[2] || resolve(workspace, 'android/app/build/outputs/bundle/release/app-release.aab'));
-const destination = resolve(process.argv[3] || resolve(workspace, 'generated-artifacts/android/noir-comic-generator-android-1.0.0.aab'));
+const destination = resolve(process.argv[3] || resolve(workspace, 'generated-artifacts/android/noir-comic-generator-android-1.1.0.aab'));
 const alias = 'noir-upload';
 const context = 'noircomics/android-upload-keystore/v1';
 

@@ -13,6 +13,69 @@ tags:
   - name: comics
     description: Comic generation
 paths:
+  /billing/session:
+    post:
+      operationId: createBillingSession
+      tags: [comics]
+      summary: Establish a signed Android usage session without granting a subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BillingDeviceInput"
+      responses:
+        "200":
+          description: Signed device session
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [version, customerId, token]
+                properties:
+                  version: { type: integer }
+                  customerId: { type: string }
+                  token: { type: string }
+        "503":
+          description: Generation remains blocked if billing is unavailable
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+  /billing/usage:
+    get:
+      operationId: getBillingUsage
+      tags: [comics]
+      summary: Return server-authoritative remaining usage and verified subscription status
+      parameters:
+        - in: header
+          name: X-Noir-Session
+          schema: { type: string }
+      responses:
+        "200":
+          description: Effective remaining allowances, including anti-abuse limits
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [version, customerId, subscribed, remaining, limits, monthlyLimits]
+                properties:
+                  version: { type: integer }
+                  customerId: { type: string }
+                  subscribed: { type: boolean }
+                  remaining:
+                    type: object
+                    additionalProperties: { type: integer }
+                  limits:
+                    type: object
+                    additionalProperties: { type: integer }
+                  monthlyLimits:
+                    type: object
+                    additionalProperties: { type: integer }
+        "503":
+          description: Usage or subscription verification failed; no paid generation is allowed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
   /comics/script:
     post:
       operationId: writeComicScript
@@ -167,6 +230,13 @@ paths:
                 $ref: "#/components/schemas/ApiError"
 components:
   schemas:
+    BillingDeviceInput:
+      type: object
+      required: [deviceId]
+      properties:
+        deviceId:
+          type: string
+          pattern: "^[a-f0-9]{64}$"
     StoryIdeaInput:
       type: object
       properties:

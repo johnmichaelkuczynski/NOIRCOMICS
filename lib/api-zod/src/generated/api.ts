@@ -9,6 +9,40 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Establish a signed Android usage session without granting a subscription
+ */
+export const createBillingSessionBodyDeviceIdRegExp = new RegExp('^[a-f0-9]{64}$');
+
+
+export const CreateBillingSessionBody = zod.object({
+  "deviceId": zod.string().regex(createBillingSessionBodyDeviceIdRegExp)
+})
+
+export const CreateBillingSessionResponse = zod.object({
+  "version": zod.number().int(),
+  "customerId": zod.string(),
+  "token": zod.string()
+})
+
+
+/**
+ * @summary Return server-authoritative remaining usage and verified subscription status
+ */
+export const GetBillingUsageHeader = zod.object({
+  "X-Noir-Session": zod.string().optional()
+})
+
+export const GetBillingUsageResponse = zod.object({
+  "version": zod.number().int(),
+  "customerId": zod.string(),
+  "subscribed": zod.boolean(),
+  "remaining": zod.record(zod.string(), zod.number().int()),
+  "limits": zod.record(zod.string(), zod.number().int()),
+  "monthlyLimits": zod.record(zod.string(), zod.number().int())
+})
+
+
+/**
  * @summary Develop a story idea into an editable script without generating images
  */
 export const writeComicScriptBodyPreviousScriptMax = 8000;

@@ -76,6 +76,7 @@ public final class MainActivity extends Activity {
         settings.setSupportMultipleWindows(false);
         settings.setJavaScriptCanOpenWindowsAutomatically(false);
         browser.addJavascriptInterface(new DownloadBridge(), "NoirDownloads");
+        browser.addJavascriptInterface(new BillingController(this, browser), "NoirBilling");
         browser.setWebViewClient(new WebViewClient() {
             @Override public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
@@ -86,6 +87,17 @@ public final class MainActivity extends Activity {
                     return missingAsset();
                 }
                 try {
+                    if (name.equals("index.html")) {
+                        String html = readAsset("web/index.html").replace("<head>",
+                            "<head><script src=\"/android-app/billing-bridge.js\"></script><script src=\"/android-app/native-bridge.js\"></script>");
+                        return new WebResourceResponse("text/html", "UTF-8", 200, "OK",
+                            java.util.Collections.singletonMap("Cache-Control", "no-store"),
+                            new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8)));
+                    }
+                    if (name.equals("billing-bridge.js") || name.equals("native-bridge.js")) {
+                        return new WebResourceResponse("application/javascript", "UTF-8", 200, "OK",
+                            java.util.Collections.singletonMap("Cache-Control", "no-store"), getAssets().open(name));
+                    }
                     String mime = URLConnection.guessContentTypeFromName(name);
                     if (name.endsWith(".js")) mime = "application/javascript";
                     if (name.endsWith(".css")) mime = "text/css";
@@ -109,7 +121,10 @@ public final class MainActivity extends Activity {
             @Override public void onPageFinished(WebView view, String url) {
                 Uri uri = Uri.parse(url);
                 if (trusted(uri) && uri.getPath() != null && uri.getPath().startsWith(LOCAL_PATH)) {
-                    try { view.evaluateJavascript(readAsset("native-bridge.js"), null); }
+                    try {
+                        view.evaluateJavascript(readAsset("billing-bridge.js"), null);
+                        view.evaluateJavascript(readAsset("native-bridge.js"), null);
+                    }
                     catch (Exception error) { notifyUser("Android download controls could not start. Reopen the app."); }
                 }
             }
@@ -220,6 +235,7 @@ public final class MainActivity extends Activity {
         if (pendingAudio != null) pendingAudio.deny();
         if (pendingFiles != null) pendingFiles.onReceiveValue(null);
         browser.removeJavascriptInterface("NoirDownloads");
+        browser.removeJavascriptInterface("NoirBilling");
         browser.destroy();
         downloads.shutdown();
         super.onDestroy();

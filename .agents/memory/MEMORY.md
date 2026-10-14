@@ -2,3 +2,4 @@
 - [Venice moderation limits](venice-moderation-limits.md) — authenticated Venice access does not guarantee acceptance of non-explicit swimwear scenes.
 - [Phone-app direction](phone-app-direction.md) — dictation is important because the user eventually wants a phone version with spoken script entry.
 - [Native toolchain compatibility](native-toolchain-compatibility.md) — this workspace has Nix and FHS runtimes; keep a native tool's interpreter and libc compatible.
+- [Google Play setup](google-play-setup.md) — the optional OAuth connector is not a prerequisite for an AAB; use RevenueCat's documented Play service-credential setup.

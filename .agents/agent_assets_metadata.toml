@@ -14,3 +14,17 @@ mtime_ms = 1791973961569
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/1b08c0e7-b745-4c20-979c-fea4e3862d88/9011c5fd-0111-476e-9f3d-041065045112"
 storage_version_token = "1791977726103633"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "uCkr2bhOGCS96548uTPfW"
+uri = "file://generated-artifacts/android/noir-comic-generator-android-1.1.0.aab"
+type = "unspecified"
+title = "Signed replacement .AAB — usage-limited build"
+description = "Version 1.1.0, code 2. Includes native Google Play purchase/restore controls and requires a billing-enabled backend. NOT payment-ready: publish the updated backend and configure the actual Google Play monthly subscription before release."
+logical_id = "dd5385d5-df4e-465a-b9c4-b8529c9334f0"
+content_hash = "sha256:48b6796164fb60b97975df6fc95812ce484238a46062f4114e1d02f71afed16a"
+size = 6624224
+mtime_ms = 1791979199380
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/dd5385d5-df4e-465a-b9c4-b8529c9334f0/a8221424-6ba2-4bc6-a113-f92cecbd7cec"
+storage_version_token = "1791979305741582"
+content_type = "application/octet-stream"
