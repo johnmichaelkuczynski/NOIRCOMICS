@@ -9,6 +9,12 @@ All Android, billing, subscription and Google Play credential work is on hold. D
 
 **How to apply:** Work on the PC app only unless the user explicitly requests otherwise. Preserve its generation engine, existing UI and writing during connection repairs. Do not request Android credentials.
 
+Old Android task cards and “waiting for input” prompts do not authorize resumed work. The user explicitly reiterated: “WE ARE NOT DOING ANDROID ANYMORE. STOP IT.”
+
+**Why:** An outstanding Android dictation prompt continued to appear after the user abandoned Android.
+
+**How to apply:** Do not pursue or ask for replies to Android tasks. Treat them as abandoned, not as pending user input.
+
 The user explicitly said: “THE PC VERSION WORKS. DON'T FUCK WITH IT.” Do not modify the working PC application while investigating publishing.
 
 **Why:** The user repeatedly directed preservation of the working PC version during the publishing investigation.
