@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type Rea
 import { getGetComicProvidersQueryKey, useGenerateComic, useGetComicProviders, useWriteComicScript, type ComicGenerationInputProvider, type ScriptDraft as Draft } from '@workspace/api-client-react';
 import { ArrowUpRight, FileText, Upload, PenLine, RefreshCw } from 'lucide-react';
 import { DictationControl } from '@/components/dictation-control';
+import { CharacterReferences, type CharacterReferenceItem } from '@/components/character-references';
 import { ScriptDraft } from '@/components/script-draft';
 import { ComicDownloads } from '@/components/comic-downloads';
 import { DevPreviewUsage } from '@/components/dev-preview-usage';
@@ -39,6 +40,8 @@ function Home() {
   const [localError, setLocalError] = useState('');
   const [preparing, setPreparing] = useState(false);
   const [dictating, setDictating] = useState(false);
+  const [characterRefs, setCharacterRefs] = useState<CharacterReferenceItem[]>([]);
+  const [preparingPhotos, setPreparingPhotos] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [draftIdea, setDraftIdea] = useState('');
   const [regenerating, setRegenerating] = useState(false);
@@ -50,7 +53,7 @@ function Home() {
   const previousComic = useRef<typeof mutation.data>(undefined);
   const comic = mutation.data || previousComic.current;
   const isGenerating = preparing || mutation.isPending;
-  const isBusy = isGenerating || scriptMutation.isPending || dictating || regenerating;
+  const isBusy = isGenerating || scriptMutation.isPending || dictating || regenerating || preparingPhotos;
   useEffect(() => {
     if (scriptMutation.data) draftRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, [scriptMutation.data]);
@@ -109,11 +112,20 @@ function Home() {
       setLocalError('Choose a whole number from 1 to 24 panels.');
       return;
     }
+    if (characterRefs.some(r => !r.characterName.trim())) {
+      setLocalError('Enter a character name for every attached photo, or remove the photo.');
+      return;
+    }
+    if (characterRefs.length && providerStatus.data?.maxCharacterReferences !== 4) {
+      setLocalError('This server has not enabled character photos yet. Publish the updated server and reload before generating with photos. Your photos are unchanged.');
+      return;
+    }
+    const characterReferences = characterRefs.map(r => ({ characterName: r.characterName.trim(), ...(r.instructions?.trim() ? { instructions: r.instructions.trim() } : {}), imageDataUri: r.imageDataUri }));
     try {
       setPreparing(true);
       const styleReferenceImage = await loadReferenceAsJpeg();
       const result = await mutation.mutateAsync({
-        data: { text: source.trim(), panelCount, styleReferenceImage, provider },
+        data: { text: source.trim(), panelCount, styleReferenceImage, provider, ...(characterReferences.length ? { characterReferences } : {}) },
       });
       previousComic.current = result;
     } catch (error) {
@@ -269,6 +281,7 @@ function Home() {
               <p className="usage-note">{provider === 'auto' ? 'Automatic uses Venice for non-explicit mature themes and ChatGPT/OpenAI for ordinary content.' : provider === 'venice' ? 'Venice selected for mature, non-explicit themes such as profanity, horror, and non-graphic adult romance.' : 'ChatGPT/OpenAI selected for safe-for-work imagery.'} Explicit sexual content is not supported in either option.</p>
               <p className="provider-status" data-testid="status-venice-connection">{providerStatus.data?.veniceMessage ?? (providerStatus.isError ? 'Could not check Venice connectivity.' : 'Checking Venice connectivity…')}</p>
               <p className="usage-note">Choose 1–24 panels. Script writing uses OpenAI; dictation uses AssemblyAI; images use the chosen provider’s balance. More panels cost more.</p>
+              <CharacterReferences value={characterRefs} onChange={setCharacterRefs} disabled={isBusy && !preparingPhotos} provider={provider} onBusyChange={setPreparingPhotos} />
               <div className="ref-note">
                 <span className="ref-symbol" aria-hidden="true"><FileText size={15} strokeWidth={1.6} /></span>
                 <div><strong>Reference style included</strong>Every frame follows the supplied black-and-white film-noir comic reference.</div>

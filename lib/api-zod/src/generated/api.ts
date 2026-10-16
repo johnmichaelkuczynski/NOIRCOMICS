@@ -142,7 +142,13 @@ export const TranscribeComicAudioResponse = zod.object({
 /**
  * @summary Check comic provider configuration and Venice connectivity
  */
+export const getComicProvidersResponseMaxCharacterReferencesMin = 0;
+export const getComicProvidersResponseMaxCharacterReferencesMax = 4;
+
+
+
 export const GetComicProvidersResponse = zod.object({
+  "maxCharacterReferences": zod.number().int().min(getComicProvidersResponseMaxCharacterReferencesMin).max(getComicProvidersResponseMaxCharacterReferencesMax).optional().describe('Character-photo capacity supported by this server. Older servers omit this field.'),
   "openaiConfigured": zod.boolean(),
   "veniceConfigured": zod.boolean(),
   "veniceConnected": zod.boolean(),
@@ -170,13 +176,26 @@ export const generateComicBodyPanelCountMax = 24;
 
 export const generateComicBodyStyleReferenceImageMax = 6000000;
 
+export const generateComicBodyCharacterReferencesItemCharacterNameMax = 80;
+
+export const generateComicBodyCharacterReferencesItemInstructionsMax = 300;
+
+export const generateComicBodyCharacterReferencesItemImageDataUriMax = 2000000;
+
+export const generateComicBodyCharacterReferencesMax = 4;
+
 
 
 export const GenerateComicBody = zod.object({
   "provider": zod.enum(['auto', 'openai', 'venice']).optional().describe('Image provider. Auto uses Venice for supported non-explicit mature themes.'),
   "text": zod.string().min(1).max(generateComicBodyTextMax).describe('Source essay, story, or other short text.'),
   "panelCount": zod.number().int().min(1).max(generateComicBodyPanelCountMax),
-  "styleReferenceImage": zod.string().min(1).max(generateComicBodyStyleReferenceImageMax).describe('A data URI containing the supplied noir style reference image.')
+  "styleReferenceImage": zod.string().min(1).max(generateComicBodyStyleReferenceImageMax).describe('A data URI containing the supplied noir style reference image.'),
+  "characterReferences": zod.array(zod.object({
+  "characterName": zod.string().min(1).max(generateComicBodyCharacterReferencesItemCharacterNameMax),
+  "instructions": zod.string().max(generateComicBodyCharacterReferencesItemInstructionsMax).optional(),
+  "imageDataUri": zod.string().min(1).max(generateComicBodyCharacterReferencesItemImageDataUriMax).describe('JPEG, PNG or WebP data URI. Not persisted as a reusable upload.')
+})).max(generateComicBodyCharacterReferencesMax).optional().describe('Optional character likeness references for this generation only. Image 1 is the noir style reference; these photos follow in array order.')
 })
 
 

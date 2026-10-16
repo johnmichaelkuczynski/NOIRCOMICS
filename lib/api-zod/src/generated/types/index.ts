@@ -11,6 +11,7 @@ export * from './audioRecording';
 export * from './audioTranscript';
 export * from './audioTranscriptProvider';
 export * from './billingDeviceInput';
+export * from './characterReference';
 export * from './comicGeneration';
 export * from './comicGenerationInput';
 export * from './comicGenerationInputProvider';

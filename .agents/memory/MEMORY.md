@@ -7,3 +7,4 @@
 - [Development preview privacy](development-preview-privacy.md) — documented private defaults are not proof of this workspace's current access settings.
 - [PC-only scope](pc-only-scope.md) — Android, billing and credential work is halted; do not resume without explicit user direction.
 - [Publishing evidence limits](publishing-evidence-limits.md) — old successful builds and missing-production-DB errors do not prove a stalled validator's cause.
+- [Character photo compatibility](character-photo-compatibility.md) — bundled clients must check server capability; four character photos plus the noir reference require five image inputs.

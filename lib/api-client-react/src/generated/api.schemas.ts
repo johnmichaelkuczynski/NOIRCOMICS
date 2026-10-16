@@ -91,6 +91,22 @@ export const ComicGenerationInputProvider = {
   venice: 'venice',
 } as const;
 
+export interface CharacterReference {
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  characterName: string;
+  /** @maxLength 300 */
+  instructions?: string;
+  /**
+     * JPEG, PNG or WebP data URI. Not persisted as a reusable upload.
+     * @minLength 1
+     * @maxLength 2000000
+     */
+  imageDataUri: string;
+}
+
 export interface ComicGenerationInput {
   /** Image provider. Auto uses Venice for supported non-explicit mature themes. */
   provider?: ComicGenerationInputProvider;
@@ -111,6 +127,11 @@ export interface ComicGenerationInput {
      * @maxLength 6000000
      */
   styleReferenceImage: string;
+  /**
+     * Optional character likeness references for this generation only. Image 1 is the noir style reference; these photos follow in array order.
+     * @maxItems 4
+     */
+  characterReferences?: CharacterReference[];
 }
 
 export interface ComicPanel {
@@ -141,6 +162,12 @@ export interface ComicGeneration {
 }
 
 export interface ComicProviders {
+  /**
+     * Character-photo capacity supported by this server. Older servers omit this field.
+     * @minimum 0
+     * @maximum 4
+     */
+  maxCharacterReferences?: number;
   openaiConfigured: boolean;
   veniceConfigured: boolean;
   veniceConnected: boolean;

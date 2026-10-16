@@ -160,7 +160,14 @@ public final class MainActivity extends Activity {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("*/*");
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"text/plain", "text/markdown", "application/octet-stream"});
+                boolean images = false;
+                for (String accepted : params.getAcceptTypes()) {
+                    if (accepted != null && accepted.startsWith("image/")) images = true;
+                }
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, images
+                    ? new String[]{"image/jpeg", "image/png", "image/webp"}
+                    : new String[]{"text/plain", "text/markdown", "application/octet-stream"});
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, images && params.getMode() == FileChooserParams.MODE_OPEN_MULTIPLE);
                 try { startActivityForResult(intent, FILE_REQUEST); }
                 catch (Exception error) {
                     pendingFiles.onReceiveValue(null);
@@ -214,8 +221,19 @@ public final class MainActivity extends Activity {
     @Override protected void onActivityResult(int code, int result, Intent data) {
         super.onActivityResult(code, result, data);
         if (code == FILE_REQUEST && pendingFiles != null) {
-            Uri chosen = result == RESULT_OK && data != null ? data.getData() : null;
-            pendingFiles.onReceiveValue(chosen != null ? new Uri[]{ chosen } : null);
+            Uri[] chosen = null;
+            if (result == RESULT_OK && data != null) {
+                android.content.ClipData items = data.getClipData();
+                if (items != null && items.getItemCount() > 4) {
+                    notifyUser("Choose no more than four character photos.");
+                } else if (items != null) {
+                    chosen = new Uri[items.getItemCount()];
+                    for (int i = 0; i < chosen.length; i++) chosen[i] = items.getItemAt(i).getUri();
+                } else if (data.getData() != null) {
+                    chosen = new Uri[]{ data.getData() };
+                }
+            }
+            pendingFiles.onReceiveValue(chosen);
             pendingFiles = null;
         }
     }

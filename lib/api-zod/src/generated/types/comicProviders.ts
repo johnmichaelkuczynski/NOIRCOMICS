@@ -7,6 +7,12 @@
  */
 
 export interface ComicProviders {
+  /**
+     * Character-photo capacity supported by this server. Older servers omit this field.
+     * @minimum 0
+     * @maximum 4
+     */
+  maxCharacterReferences?: number;
   openaiConfigured: boolean;
   veniceConfigured: boolean;
   veniceConnected: boolean;

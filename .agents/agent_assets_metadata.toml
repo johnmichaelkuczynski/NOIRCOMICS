@@ -168,3 +168,17 @@ mtime_ms = 1792003304096
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/a66a8612-559e-42bb-9797-dbd810ff3e77/5f4b6875-1459-4eaa-b1be-2c7aef1354d4"
 storage_version_token = "1792018236616471"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "2CXBx65RTNKHad6LysAsq"
+uri = "file://generated-artifacts/android/noir-comic-creator-deluxe-vc3.aab"
+type = "unspecified"
+title = "DOWNLOAD — Android with character photos, version code 3"
+description = "NOIR COMIC CREATOR DELUXE; nk.noircomicgen2.app; same upload key. Includes up to four named character photos and Android multi-image selection. Requires the updated server to be published; native photo selection has not been physically device-tested."
+logical_id = "beb8314b-bdab-49bb-a65f-79191ded924f"
+content_hash = "sha256:887bf83697914dc33711844d748385f9e4827362a70e94d159db0aa8feb659a7"
+size = 6671647
+mtime_ms = 1792157479881
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/beb8314b-bdab-49bb-a65f-79191ded924f/fbae3bfc-de04-4af1-92ac-a85d77998b13"
+storage_version_token = "1792157554201040"
+content_type = "application/octet-stream"

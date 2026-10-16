@@ -80,7 +80,9 @@ router.get("/comics/providers", async (_req, res): Promise<void> => {
 router.post("/comics/generate", async (req, res): Promise<void> => {
   const input = GenerateComicBody.safeParse(req.body);
   if (!input.success || !input.data.text.trim()) {
-    res.status(400).json({ error: "Enter a short text and choose between 1 and 24 panels." });
+    res.status(400).json({ error: !input.success && input.error.issues.some(issue => issue.path[0] === "characterReferences")
+      ? "Use no more than four JPEG, PNG or WebP character photos, give each a character name, and keep photo instructions under 300 characters."
+      : "Enter a short text and choose between 1 and 24 panels." });
     return;
   }
 

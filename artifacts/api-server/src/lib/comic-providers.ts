@@ -1,6 +1,7 @@
 export type ImageProvider = "openai" | "venice";
 export const OPENAI_IMAGE_MODEL = "gpt-image-1";
 export const VENICE_IMAGE_MODEL = "grok-imagine-edit";
+export const VENICE_CHARACTER_MODEL = "seedream-v4-edit";
 const VENICE_BASE_URL = "https://api.venice.ai/api/v1";
 
 export class ComicServiceError extends Error {
@@ -77,14 +78,19 @@ export async function classifyComicContent(text: string, key: string): Promise<"
   return category;
 }
 
-export async function illustrateWithVenice(prompt: string, reference: Uint8Array, key: string): Promise<string> {
-  const response = await fetch(`${VENICE_BASE_URL}/image/edit`, {
+export async function illustrateWithVenice(prompt: string, reference: Uint8Array, key: string, characterPhotos: Uint8Array[] = []): Promise<string> {
+  const response = await fetch(`${VENICE_BASE_URL}/image/${characterPhotos.length ? "multi-edit" : "edit"}`, {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     signal: AbortSignal.timeout(240_000),
     body: JSON.stringify({
-      model: VENICE_IMAGE_MODEL,
-      image: Buffer.from(reference).toString("base64"),
+      ...(characterPhotos.length ? {
+        modelId: VENICE_CHARACTER_MODEL,
+        images: [reference, ...characterPhotos].map(image => Buffer.from(image).toString("base64")),
+      } : {
+        model: VENICE_IMAGE_MODEL,
+        image: Buffer.from(reference).toString("base64"),
+      }),
       prompt,
       aspect_ratio: "2:3",
       output_format: "jpeg",
@@ -105,6 +111,7 @@ export async function illustrateWithVenice(prompt: string, reference: Uint8Array
 }
 
 type ProviderStatus = {
+  maxCharacterReferences: number;
   openaiConfigured: boolean;
   veniceConfigured: boolean;
   veniceConnected: boolean;
@@ -120,6 +127,7 @@ export async function getComicProviderStatus(): Promise<ProviderStatus> {
   pendingStatus = (async () => {
     const key = process.env.VENICE_API_KEY;
     const status: ProviderStatus = {
+      maxCharacterReferences: 4,
       openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
       veniceConfigured: Boolean(key),
       veniceConnected: false,

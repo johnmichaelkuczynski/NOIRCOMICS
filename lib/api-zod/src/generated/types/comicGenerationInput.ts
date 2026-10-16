@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { CharacterReference } from './characterReference';
 import type { ComicGenerationInputProvider } from './comicGenerationInputProvider';
 
 export interface ComicGenerationInput {
@@ -27,4 +28,9 @@ export interface ComicGenerationInput {
      * @maxLength 6000000
      */
   styleReferenceImage: string;
+  /**
+     * Optional character likeness references for this generation only. Image 1 is the noir style reference; these photos follow in array order.
+     * @maxItems 4
+     */
+  characterReferences?: CharacterReference[];
 }

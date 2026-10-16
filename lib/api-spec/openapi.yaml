@@ -430,10 +430,34 @@ components:
           minLength: 1
           maxLength: 6000000
           description: A data URI containing the supplied noir style reference image.
+        characterReferences:
+          type: array
+          maxItems: 4
+          description: Optional character likeness references for this generation only. Image 1 is the noir style reference; these photos follow in array order.
+          items:
+            $ref: "#/components/schemas/CharacterReference"
       required:
         - text
         - panelCount
         - styleReferenceImage
+    CharacterReference:
+      type: object
+      required:
+        - characterName
+        - imageDataUri
+      properties:
+        characterName:
+          type: string
+          minLength: 1
+          maxLength: 80
+        instructions:
+          type: string
+          maxLength: 300
+        imageDataUri:
+          type: string
+          minLength: 1
+          maxLength: 2000000
+          description: JPEG, PNG or WebP data URI. Not persisted as a reusable upload.
     ComicPanel:
       type: object
       properties:
@@ -475,6 +499,11 @@ components:
     ComicProviders:
       type: object
       properties:
+        maxCharacterReferences:
+          type: integer
+          minimum: 0
+          maximum: 4
+          description: Character-photo capacity supported by this server. Older servers omit this field.
         openaiConfigured:
           type: boolean
         veniceConfigured:
