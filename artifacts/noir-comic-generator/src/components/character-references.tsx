@@ -4,7 +4,7 @@ import './character-references.css';
 
 export type CharacterReferenceValue = { characterName: string; instructions?: string; imageDataUri: string };
 export type CharacterReferenceItem = CharacterReferenceValue & { id: string };
-type Props = { value: CharacterReferenceItem[]; onChange: (v: CharacterReferenceItem[]) => void; disabled: boolean; provider: string; onBusyChange: (busy: boolean) => void };
+type Props = { value: CharacterReferenceItem[]; onChange: (v: CharacterReferenceItem[]) => void; disabled: boolean; onBusyChange: (busy: boolean) => void };
 
 const MAX = 4;
 const TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -28,7 +28,7 @@ async function toSquareJpeg(file: File): Promise<string> {
   return uri;
 }
 
-export function CharacterReferences({ value, onChange, disabled, provider, onBusyChange }: Props) {
+export function CharacterReferences({ value, onChange, disabled, onBusyChange }: Props) {
   const [reading, setReading] = useState(false);
   const [error, setError] = useState('');
   const input = useRef<HTMLInputElement>(null);
@@ -81,7 +81,7 @@ export function CharacterReferences({ value, onChange, disabled, provider, onBus
     <div className="char-refs">
       <div className="char-refs-head"><span style={{ font: 'inherit', color: 'inherit' }}>Character photos (optional)</span><span data-testid="text-character-photo-count">{value.length} / 4</span></div>
       <p className="usage-note" style={{ marginTop: 0 }}>Photos are sent to the selected image provider for this comic only and are not saved as reusable uploads. They stay in this page until you leave it.{' '}
-        {provider === 'venice' ? 'With photos, Venice uses a Seedream multi-image model, which has different image charges.' : provider === 'auto' ? 'With photos, Venice (if chosen automatically) uses a Seedream multi-image model with different image charges; OpenAI keeps its current model.' : 'OpenAI keeps its current model.'}</p>
+        Character photos are interpreted and illustrated through Venice only. Venice uses a Seedream multi-image model with different image charges.</p>
       {value.length > 0 && (
         <div className="char-ref-list">
           {value.map((item, n) => (

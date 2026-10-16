@@ -182,3 +182,17 @@ mtime_ms = 1792157479881
 storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/beb8314b-bdab-49bb-a65f-79191ded924f/fbae3bfc-de04-4af1-92ac-a85d77998b13"
 storage_version_token = "1792157554201040"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "-W-l8RqjkppDrtMhou-SE"
+uri = "file://generated-artifacts/character-photo-fix/venice-reference-comparison.jpg"
+type = "image"
+title = "Actual Venice test — reference thumbnail and two generated panels"
+description = "Real Venice output using the face-free noir style guidance. The left image is only the small portrait thumbnail extracted from your screenshot, not the original full-resolution photograph. Routing is verified; this does not establish an exact likeness match to the unavailable original."
+logical_id = "30a98850-6c74-43dd-ace1-fd8a6d62de51"
+content_hash = "sha256:87acac02b190c47f960f83fabc5caa4f78b92029e94343e2359ea1ded0eb7ff0"
+size = 144509
+mtime_ms = 1792158982804
+storage_uri = "gcs://replit-rams-assets-spock/rams/assets/repl:d6bf3bef-b2a6-4683-88b1-8c0f4d4988b4/30a98850-6c74-43dd-ace1-fd8a6d62de51/9ff7c260-89ab-473f-a2ba-1e13f445ff2a"
+storage_version_token = "1792159003568598"
+content_type = "image/jpeg"

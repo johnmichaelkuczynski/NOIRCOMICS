@@ -2,6 +2,7 @@ export type ImageProvider = "openai" | "venice";
 export const OPENAI_IMAGE_MODEL = "gpt-image-1";
 export const VENICE_IMAGE_MODEL = "grok-imagine-edit";
 export const VENICE_CHARACTER_MODEL = "seedream-v4-edit";
+export const VENICE_VISION_MODEL = "qwen3-vl-235b-a22b";
 const VENICE_BASE_URL = "https://api.venice.ai/api/v1";
 
 export class ComicServiceError extends Error {
@@ -34,19 +35,19 @@ export async function checkProviderResponse(response: Response, provider: "OpenA
   throw new ComicServiceError(`${provider} could not complete generation (HTTP ${response.status}). Please try again.`);
 }
 
-export async function providerJson(response: Response): Promise<Record<string, unknown>> {
-  await checkProviderResponse(response, "OpenAI");
+export async function providerJson(response: Response, provider: "OpenAI" | "Venice" = "OpenAI"): Promise<Record<string, unknown>> {
+  await checkProviderResponse(response, provider);
   return await response.json() as Record<string, unknown>;
 }
 
 // This check classifies the request only; it never writes or reproduces explicit content.
-export async function classifyComicContent(text: string, key: string): Promise<"standard" | "mature_non_explicit"> {
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+export async function classifyComicContent(text: string, key: string, provider: ImageProvider = "openai"): Promise<"standard" | "mature_non_explicit"> {
+  const response = await fetch(provider === "venice" ? `${VENICE_BASE_URL}/chat/completions` : "https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     signal: AbortSignal.timeout(45_000),
     body: JSON.stringify({
-      model: "gpt-4.1-mini",
+      model: provider === "venice" ? VENICE_VISION_MODEL : "gpt-4.1-mini",
       temperature: 0,
       response_format: {
         type: "json_schema",
@@ -67,7 +68,7 @@ export async function classifyComicContent(text: string, key: string): Promise<"
       ],
     }),
   });
-  const data = await providerJson(response);
+  const data = await providerJson(response, provider === "venice" ? "Venice" : "OpenAI");
   const content = (data.choices as { message?: { content?: string } }[] | undefined)?.[0]?.message?.content;
   let category: unknown;
   try { category = JSON.parse(content ?? "").category; } catch { /* Fail closed below. */ }
@@ -86,7 +87,7 @@ export async function illustrateWithVenice(prompt: string, reference: Uint8Array
     body: JSON.stringify({
       ...(characterPhotos.length ? {
         modelId: VENICE_CHARACTER_MODEL,
-        images: [reference, ...characterPhotos].map(image => Buffer.from(image).toString("base64")),
+        images: [...characterPhotos, reference].map(image => Buffer.from(image).toString("base64")),
       } : {
         model: VENICE_IMAGE_MODEL,
         image: Buffer.from(reference).toString("base64"),

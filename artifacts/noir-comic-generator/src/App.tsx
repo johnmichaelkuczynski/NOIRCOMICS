@@ -16,10 +16,27 @@ import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 
 const queryClient = new QueryClient();
 
-async function loadReferenceAsJpeg(): Promise<string> {
+async function loadReferenceAsJpeg(forCharacterPhotos = false): Promise<string> {
   const response = await fetch(`${import.meta.env.BASE_URL}references/film-noir-style.png`);
   if (!response.ok) throw new Error('Could not load the noir style reference. Please try again.');
   const bitmap = await createImageBitmap(await response.blob());
+  if (forCharacterPhotos) {
+    // The fixed reference page contains actors whose faces can override the
+    // uploaded identity. This upper-left window crop contains no people or
+    // lettering, retaining the sample's lighting and grayscale texture only.
+    const sx = Math.round(bitmap.width * 0.01);
+    const sy = Math.round(bitmap.height * 0.05);
+    const sw = Math.round(bitmap.width * 0.29);
+    const sh = Math.round(bitmap.height * 0.095);
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = Math.round(1024 * sh / sw);
+    const context = canvas.getContext('2d');
+    if (!context) { bitmap.close(); throw new Error('Your browser could not prepare the style reference.'); }
+    context.drawImage(bitmap, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    return canvas.toDataURL('image/jpeg', 0.84);
+  }
   const maxDimension = 1400;
   const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');
@@ -41,6 +58,7 @@ function Home() {
   const [preparing, setPreparing] = useState(false);
   const [dictating, setDictating] = useState(false);
   const [characterRefs, setCharacterRefs] = useState<CharacterReferenceItem[]>([]);
+  const effectiveProvider = characterRefs.length ? 'venice' : provider;
   const [preparingPhotos, setPreparingPhotos] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [draftIdea, setDraftIdea] = useState('');
@@ -123,9 +141,9 @@ function Home() {
     const characterReferences = characterRefs.map(r => ({ characterName: r.characterName.trim(), ...(r.instructions?.trim() ? { instructions: r.instructions.trim() } : {}), imageDataUri: r.imageDataUri }));
     try {
       setPreparing(true);
-      const styleReferenceImage = await loadReferenceAsJpeg();
+      const styleReferenceImage = await loadReferenceAsJpeg(characterRefs.length > 0);
       const result = await mutation.mutateAsync({
-        data: { text: source.trim(), panelCount, styleReferenceImage, provider, ...(characterReferences.length ? { characterReferences } : {}) },
+        data: { text: source.trim(), panelCount, styleReferenceImage, provider: effectiveProvider, ...(characterReferences.length ? { characterReferences } : {}) },
       });
       previousComic.current = result;
     } catch (error) {
@@ -272,16 +290,16 @@ function Home() {
               </div>
               <div className="provider-row">
                 <label htmlFor="image-provider">Image provider</label>
-                <select id="image-provider" className="provider-select" data-testid="select-image-provider" value={provider} disabled={isBusy} onChange={(event) => setProvider(event.target.value as ComicGenerationInputProvider)}>
+                <select id="image-provider" className="provider-select" data-testid="select-image-provider" value={effectiveProvider} disabled={isBusy || characterRefs.length > 0} onChange={(event) => setProvider(event.target.value as ComicGenerationInputProvider)}>
                   <option value="openai">ChatGPT — SFW</option>
                   <option value="venice">Venice — Mature</option>
                   <option value="auto">Automatic</option>
                 </select>
               </div>
-              <p className="usage-note">{provider === 'auto' ? 'Automatic uses Venice for non-explicit mature themes and ChatGPT/OpenAI for ordinary content.' : provider === 'venice' ? 'Venice selected for mature, non-explicit themes such as profanity, horror, and non-graphic adult romance.' : 'ChatGPT/OpenAI selected for safe-for-work imagery.'} Explicit sexual content is not supported in either option.</p>
+              <p className="usage-note">{characterRefs.length ? 'Character photos require Venice. Venice reads the photos and generates the comic; no character photos are sent to OpenAI. Remove the photos to choose another provider.' : provider === 'auto' ? 'Automatic uses Venice for non-explicit mature themes and ChatGPT/OpenAI for ordinary content.' : provider === 'venice' ? 'Venice selected for mature, non-explicit themes such as profanity, horror, and non-graphic adult romance.' : 'ChatGPT/OpenAI selected for safe-for-work imagery.'} Explicit sexual content is not supported in either option.</p>
               <p className="provider-status" data-testid="status-venice-connection">{providerStatus.data?.veniceMessage ?? (providerStatus.isError ? 'Could not check Venice connectivity.' : 'Checking Venice connectivity…')}</p>
-              <p className="usage-note">Choose 1–24 panels. Script writing uses OpenAI; dictation uses AssemblyAI; images use the chosen provider’s balance. More panels cost more.</p>
-              <CharacterReferences value={characterRefs} onChange={setCharacterRefs} disabled={isBusy && !preparingPhotos} provider={provider} onBusyChange={setPreparingPhotos} />
+              <p className="usage-note">Choose 1–24 panels. {characterRefs.length ? 'Photo-assisted comic planning and images use Venice; standalone script writing uses OpenAI.' : 'Script writing uses OpenAI; images use the chosen provider’s balance.'} Dictation uses AssemblyAI. More panels cost more.</p>
+              <CharacterReferences value={characterRefs} onChange={setCharacterRefs} disabled={isBusy && !preparingPhotos} onBusyChange={setPreparingPhotos} />
               <div className="ref-note">
                 <span className="ref-symbol" aria-hidden="true"><FileText size={15} strokeWidth={1.6} /></span>
                 <div><strong>Reference style included</strong>Every frame follows the supplied black-and-white film-noir comic reference.</div>
