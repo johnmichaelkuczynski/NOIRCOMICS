@@ -8,6 +8,8 @@ import { ComicDownloads } from '@/components/comic-downloads';
 import { DevPreviewUsage } from '@/components/dev-preview-usage';
 import { errorMessage as getErrorMessage, comicRequestError } from '@/lib/error-message';
 import { generateComicInBackground } from '@/lib/comic-job';
+import noirStyleImage from '@/assets/noir-style.jpg?inline';
+import photoStyleImage from '@/assets/noir-style-without-people.jpg?inline';
 import { QueryClient, QueryClientProvider, useMutation } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -16,39 +18,6 @@ import NotFound from '@/pages/not-found';
 import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 
 const queryClient = new QueryClient();
-
-async function loadReferenceAsJpeg(forCharacterPhotos = false): Promise<string> {
-  const response = await fetch(`${import.meta.env.BASE_URL}references/film-noir-style.png`);
-  if (!response.ok) throw new Error('Could not load the noir style reference. Please try again.');
-  const bitmap = await createImageBitmap(await response.blob());
-  if (forCharacterPhotos) {
-    // The fixed reference page contains actors whose faces can override the
-    // uploaded identity. This upper-left window crop contains no people or
-    // lettering, retaining the sample's lighting and grayscale texture only.
-    const sx = Math.round(bitmap.width * 0.01);
-    const sy = Math.round(bitmap.height * 0.05);
-    const sw = Math.round(bitmap.width * 0.29);
-    const sh = Math.round(bitmap.height * 0.095);
-    const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = Math.round(1024 * sh / sw);
-    const context = canvas.getContext('2d');
-    if (!context) { bitmap.close(); throw new Error('Your browser could not prepare the style reference.'); }
-    context.drawImage(bitmap, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-    bitmap.close();
-    return canvas.toDataURL('image/jpeg', 0.84);
-  }
-  const maxDimension = 1400;
-  const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  const context = canvas.getContext('2d');
-  if (!context) throw new Error('Your browser could not prepare the style reference.');
-  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-  return canvas.toDataURL('image/jpeg', 0.84);
-}
 
 function Home() {
   const [text, setText] = useState('');
@@ -143,7 +112,9 @@ function Home() {
     let stage: 'style' | 'generation' = 'style';
     try {
       setPreparing(true);
-      const styleReferenceImage = await loadReferenceAsJpeg(characterRefs.length > 0);
+      // Bundle the prepared references with the app. Generation must not depend
+      // on another network fetch of the large source PNG or canvas conversion.
+      const styleReferenceImage = characterRefs.length ? photoStyleImage : noirStyleImage;
       stage = 'generation';
       const result = await mutation.mutateAsync({
         data: { text: source.trim(), panelCount, styleReferenceImage, provider: effectiveProvider, ...(characterReferences.length ? { characterReferences } : {}) },
