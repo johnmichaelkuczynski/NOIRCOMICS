@@ -40,7 +40,7 @@ async function writeScript(input: ComicInput, key: string, provider: ImageProvid
   const response = await fetch(provider === "venice" ? "https://api.venice.ai/api/v1/chat/completions" : "https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-    signal: AbortSignal.timeout(casting.length ? 120_000 : 90_000),
+    signal: AbortSignal.timeout(casting.length ? 240_000 : 90_000),
     body: JSON.stringify({
       model: provider === "venice" ? VENICE_VISION_MODEL : "gpt-4.1",
       ...(casting.length ? { max_tokens: 8192 } : {}),
@@ -87,6 +87,11 @@ async function writeScript(input: ComicInput, key: string, provider: ImageProvid
         ] : sourceContent },
       ],
     }),
+  }).catch(error => {
+    if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) {
+      throw new ComicServiceError(`${providerName} comic planning timed out before images were requested. Your writing and photos are unchanged.`);
+    }
+    throw new ComicServiceError(`${providerName} could not be reached for comic planning. No image requests were sent.`);
   });
   const json = await providerJson(response, providerName);
   const choices = json.choices as { message?: { content?: string } }[] | undefined;

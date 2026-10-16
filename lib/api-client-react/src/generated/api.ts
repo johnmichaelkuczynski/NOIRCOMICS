@@ -25,6 +25,7 @@ import type {
   BillingDeviceInput,
   ComicGeneration,
   ComicGenerationInput,
+  ComicJob,
   ComicProviders,
   CreateBillingSession200,
   GetAndroidBillingChallenge200,
@@ -926,6 +927,171 @@ export function useHealthCheck<TData = Awaited<ReturnType<typeof healthCheck>>, 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getHealthCheckQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getStartComicJobUrl = () => {
+
+
+
+
+  return `/api/comics/jobs`
+}
+
+/**
+ * @summary Start comic generation without holding a long gateway connection
+ */
+export const startComicJob = async (comicGenerationInput: ComicGenerationInput, options?: Parameters<typeof customFetch>[1]): Promise<ComicJob> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<ComicJob>(getStartComicJobUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(comicGenerationInput)
+  }
+);}
+
+
+
+
+
+export const getStartComicJobMutationKey = () => ['startComicJob'] as const;
+
+export const getStartComicJobMutationOptions = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startComicJob>>, TError,StartComicJobMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof startComicJob>>, TError,StartComicJobMutationVariables, TContext> => {
+
+const mutationKey = getStartComicJobMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startComicJob>>, StartComicJobMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  startComicJob(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartComicJobMutationResult = NonNullable<Awaited<ReturnType<typeof startComicJob>>>
+    export type StartComicJobMutationBody = BodyType<ComicGenerationInput>
+    export type StartComicJobMutationError = ErrorType<ApiError>
+    export type StartComicJobMutationVariables = {data: BodyType<ComicGenerationInput>}
+
+    /**
+ * @summary Start comic generation without holding a long gateway connection
+ */
+export const useStartComicJob = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startComicJob>>, TError,StartComicJobMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof startComicJob>>,
+        TError,
+        StartComicJobMutationVariables,
+        TContext
+      > => {
+      return useMutation(getStartComicJobMutationOptions(options));
+    }
+
+export const getGetComicJobUrl = (jobId: string,) => {
+
+
+
+
+  return `/api/comics/jobs/${jobId}`
+}
+
+/**
+ * @summary Read the progress or result of this browser's generation
+ */
+export const getComicJob = async (jobId: string, options?: Parameters<typeof customFetch>[1]): Promise<ComicJob> => {
+
+  return customFetch<ComicJob>(getGetComicJobUrl(jobId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetComicJobQueryKey = (jobId: string,) => {
+    return [
+    `/api/comics/jobs/${jobId}`
+    ] as const;
+    }
+
+
+export const getGetComicJobQueryOptions = <TData = Awaited<ReturnType<typeof getComicJob>>, TError = ErrorType<ApiError>>(jobId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getComicJob>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetComicJobQueryKey(jobId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getComicJob>>> = ({ signal }) => getComicJob(jobId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: jobId !== null && jobId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getComicJob>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetComicJobQueryResult = NonNullable<Awaited<ReturnType<typeof getComicJob>>>
+export type GetComicJobQueryError = ErrorType<ApiError>
+
+
+/**
+ * @summary Read the progress or result of this browser's generation
+ */
+
+export function useGetComicJob<TData = Awaited<ReturnType<typeof getComicJob>>, TError = ErrorType<ApiError>>(
+ jobId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getComicJob>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetComicJobQueryOptions(jobId,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

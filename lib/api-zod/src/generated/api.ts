@@ -167,6 +167,98 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
+ * @summary Start comic generation without holding a long gateway connection
+ */
+export const StartComicJobHeader = zod.object({
+  "X-Comic-Request-Key": zod.string().uuid()
+})
+
+export const startComicJobBodyTextMax = 8000;
+
+export const startComicJobBodyPanelCountMax = 24;
+
+export const startComicJobBodyStyleReferenceImageMax = 6000000;
+
+export const startComicJobBodyCharacterReferencesItemCharacterNameMax = 80;
+
+export const startComicJobBodyCharacterReferencesItemInstructionsMax = 300;
+
+export const startComicJobBodyCharacterReferencesItemImageDataUriMax = 2000000;
+
+export const startComicJobBodyCharacterReferencesMax = 4;
+
+
+
+export const StartComicJobBody = zod.object({
+  "provider": zod.enum(['auto', 'openai', 'venice']).optional().describe('Image provider. Auto uses Venice for supported non-explicit mature themes.'),
+  "text": zod.string().min(1).max(startComicJobBodyTextMax).describe('Source essay, story, or other short text.'),
+  "panelCount": zod.number().int().min(1).max(startComicJobBodyPanelCountMax),
+  "styleReferenceImage": zod.string().min(1).max(startComicJobBodyStyleReferenceImageMax).describe('A data URI containing the supplied noir style reference image.'),
+  "characterReferences": zod.array(zod.object({
+  "characterName": zod.string().min(1).max(startComicJobBodyCharacterReferencesItemCharacterNameMax),
+  "instructions": zod.string().max(startComicJobBodyCharacterReferencesItemInstructionsMax).optional(),
+  "imageDataUri": zod.string().min(1).max(startComicJobBodyCharacterReferencesItemImageDataUriMax).describe('JPEG, PNG or WebP data URI. Not persisted as a reusable upload.')
+})).max(startComicJobBodyCharacterReferencesMax).optional().describe('Optional character likeness references for this generation only. Image 1 is the noir style reference; these photos follow in array order.')
+})
+
+
+export const startComicJobResponseComicPanelsMax = 24;
+
+
+
+export const StartComicJobResponse = zod.object({
+  "id": zod.string().uuid(),
+  "status": zod.enum(['pending', 'complete', 'failed']),
+  "comic": zod.object({
+  "providerUsed": zod.enum(['openai', 'venice']),
+  "imageModel": zod.string(),
+  "title": zod.string(),
+  "panels": zod.array(zod.object({
+  "index": zod.number().int().min(1),
+  "visualDescription": zod.string(),
+  "dialogue": zod.string(),
+  "imageDataUri": zod.string()
+})).min(1).max(startComicJobResponseComicPanelsMax)
+}).optional(),
+  "error": zod.string().optional()
+})
+
+
+/**
+ * @summary Read the progress or result of this browser's generation
+ */
+export const GetComicJobParams = zod.object({
+  "jobId": zod.coerce.string().uuid()
+})
+
+export const GetComicJobHeader = zod.object({
+  "X-Comic-Request-Key": zod.string().uuid()
+})
+
+
+export const getComicJobResponseComicPanelsMax = 24;
+
+
+
+export const GetComicJobResponse = zod.object({
+  "id": zod.string().uuid(),
+  "status": zod.enum(['pending', 'complete', 'failed']),
+  "comic": zod.object({
+  "providerUsed": zod.enum(['openai', 'venice']),
+  "imageModel": zod.string(),
+  "title": zod.string(),
+  "panels": zod.array(zod.object({
+  "index": zod.number().int().min(1),
+  "visualDescription": zod.string(),
+  "dialogue": zod.string(),
+  "imageDataUri": zod.string()
+})).min(1).max(getComicJobResponseComicPanelsMax)
+}).optional(),
+  "error": zod.string().optional()
+})
+
+
+/**
  * Converts a short source text into the requested number of film-noir comic panels.
  * @summary Generate a noir comic from text
  */

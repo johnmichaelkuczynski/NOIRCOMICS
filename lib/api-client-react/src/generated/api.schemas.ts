@@ -5,6 +5,49 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type ComicJobStatus = typeof ComicJobStatus[keyof typeof ComicJobStatus];
+
+
+export const ComicJobStatus = {
+  pending: 'pending',
+  complete: 'complete',
+  failed: 'failed',
+} as const;
+
+export type ComicGenerationProviderUsed = typeof ComicGenerationProviderUsed[keyof typeof ComicGenerationProviderUsed];
+
+
+export const ComicGenerationProviderUsed = {
+  openai: 'openai',
+  venice: 'venice',
+} as const;
+
+export interface ComicPanel {
+  /** @minimum 1 */
+  index: number;
+  visualDescription: string;
+  dialogue: string;
+  imageDataUri: string;
+}
+
+export interface ComicGeneration {
+  providerUsed: ComicGenerationProviderUsed;
+  imageModel: string;
+  title: string;
+  /**
+     * @minItems 1
+     * @maxItems 24
+     */
+  panels: ComicPanel[];
+}
+
+export interface ComicJob {
+  id: string;
+  status: ComicJobStatus;
+  comic?: ComicGeneration;
+  error?: string;
+}
+
 export interface BillingDeviceInput {
   /** @pattern ^[a-f0-9]{64}$ */
   deviceId: string;
@@ -132,33 +175,6 @@ export interface ComicGenerationInput {
      * @maxItems 4
      */
   characterReferences?: CharacterReference[];
-}
-
-export interface ComicPanel {
-  /** @minimum 1 */
-  index: number;
-  visualDescription: string;
-  dialogue: string;
-  imageDataUri: string;
-}
-
-export type ComicGenerationProviderUsed = typeof ComicGenerationProviderUsed[keyof typeof ComicGenerationProviderUsed];
-
-
-export const ComicGenerationProviderUsed = {
-  openai: 'openai',
-  venice: 'venice',
-} as const;
-
-export interface ComicGeneration {
-  providerUsed: ComicGenerationProviderUsed;
-  imageModel: string;
-  title: string;
-  /**
-     * @minItems 1
-     * @maxItems 24
-     */
-  panels: ComicPanel[];
 }
 
 export interface ComicProviders {

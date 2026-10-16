@@ -304,6 +304,68 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /comics/jobs:
+    post:
+      security: [{ NoirSession: [], NoirIntegrity: [], NoirNonce: [] }]
+      operationId: startComicJob
+      tags: [comics]
+      summary: Start comic generation without holding a long gateway connection
+      parameters:
+        - in: header
+          name: X-Comic-Request-Key
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ComicGenerationInput" }
+      responses:
+        "202":
+          description: Generation accepted or existing matching job returned
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ComicJob" }
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "409":
+          description: Request key already used for different input
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "503":
+          description: Generation capacity is full
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+  /comics/jobs/{jobId}:
+    get:
+      operationId: getComicJob
+      tags: [comics]
+      summary: Read the progress or result of this browser's generation
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema: { type: string, format: uuid }
+        - in: header
+          name: X-Comic-Request-Key
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Pending job, completed comic, or original generation error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ComicJob" }
+        "404":
+          description: Job expired, server restarted, or access key does not match
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
   /comics/generate:
     post:
       security: [{ NoirSession: [], NoirIntegrity: [], NoirNonce: [] }]
@@ -342,6 +404,14 @@ components:
     NoirIntegrity: { type: apiKey, in: header, name: X-Noir-Integrity }
     NoirNonce: { type: apiKey, in: header, name: X-Noir-Nonce }
   schemas:
+    ComicJob:
+      type: object
+      required: [id, status]
+      properties:
+        id: { type: string, format: uuid }
+        status: { type: string, enum: [pending, complete, failed] }
+        comic: { $ref: "#/components/schemas/ComicGeneration" }
+        error: { type: string }
     BillingDeviceInput:
       type: object
       required: [deviceId, nonce, integrityToken]

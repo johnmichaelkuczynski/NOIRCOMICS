@@ -16,6 +16,8 @@ export * from './comicGeneration';
 export * from './comicGenerationInput';
 export * from './comicGenerationInputProvider';
 export * from './comicGenerationProviderUsed';
+export * from './comicJob';
+export * from './comicJobStatus';
 export * from './comicPanel';
 export * from './comicProviders';
 export * from './createBillingSession200';

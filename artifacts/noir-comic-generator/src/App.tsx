@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
-import { getGetComicProvidersQueryKey, useGenerateComic, useGetComicProviders, useWriteComicScript, type ComicGenerationInputProvider, type ScriptDraft as Draft } from '@workspace/api-client-react';
+import { getGetComicProvidersQueryKey, useGetComicProviders, useWriteComicScript, type ComicGenerationInput, type ComicGenerationInputProvider, type ScriptDraft as Draft } from '@workspace/api-client-react';
 import { ArrowUpRight, FileText, Upload, PenLine, RefreshCw } from 'lucide-react';
 import { DictationControl } from '@/components/dictation-control';
 import { CharacterReferences, type CharacterReferenceItem } from '@/components/character-references';
@@ -7,7 +7,8 @@ import { ScriptDraft } from '@/components/script-draft';
 import { ComicDownloads } from '@/components/comic-downloads';
 import { DevPreviewUsage } from '@/components/dev-preview-usage';
 import { errorMessage as getErrorMessage, comicRequestError } from '@/lib/error-message';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { generateComicInBackground } from '@/lib/comic-job';
+import { QueryClient, QueryClientProvider, useMutation } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -66,7 +67,7 @@ function Home() {
   const [regenerationError, setRegenerationError] = useState('');
   const draftRef = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
-  const mutation = useGenerateComic();
+  const mutation = useMutation({ mutationFn: ({ data }: { data: ComicGenerationInput }) => generateComicInBackground(data), retry: false });
   const scriptMutation = useWriteComicScript();
   const previousComic = useRef<typeof mutation.data>(undefined);
   const comic = mutation.data || previousComic.current;

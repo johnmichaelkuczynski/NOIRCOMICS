@@ -18,3 +18,12 @@ test('provider and validation errors retain their original explanation', () => {
   assert.equal(comicRequestError({ data: { error: 'Venice rejected the generation request.' } }, 'generation'), 'Venice rejected the generation request.');
   assert.equal(comicRequestError(new Error('Could not load the noir style reference.'), 'style'), 'Could not load the noir style reference.');
 });
+
+test('HTML gateway pages never appear as raw markup in generation errors', () => {
+  for (const status of [502, 503, 504]) {
+    const result = comicRequestError({ status, data: '<!DOCTYPE html><title>Bad Gateway</title>' }, 'generation');
+    assert.match(result, new RegExp(`HTTP ${status}`));
+    assert.doesNotMatch(result, /DOCTYPE|<title>/);
+  }
+  assert.equal(comicRequestError({ status: 503, data: { error: 'Generation capacity is full.' } }, 'generation'), 'Generation capacity is full.');
+});
