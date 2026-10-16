@@ -11,7 +11,7 @@ Use short acceptance and progress requests for web comic generation, not a singl
 
 Keep the included style references available with the loaded app instead of downloading the original large PNG when Generate is pressed.
 
-**Why:** After the gateway repair, the user's PC browser still failed at the separate style-image fetch before any generation request could be sent, despite healthy provider connectivity. Bundling the two already-prepared JPEG references trades some initial bundle size for removing that failure point.
+**Why:** After the gateway repair, the user's PC browser still failed at the separate style-image fetch before any generation request could be sent, despite healthy provider connectivity. Bundling the two already-prepared JPEG references trades some initial bundle size for removing that failure point. The user explicitly approved the restored PC behavior: “MUCH BETTER!!!!!!!!” Preserve this approach rather than reintroducing a generation-time style download.
 
 **How to apply:** Preserve both the ordinary full reference and the people-free photo-mode reference. Test generation with the old PNG URL unavailable, using real provider responses rather than treating simulated jobs as proof that the PC app works.
 
