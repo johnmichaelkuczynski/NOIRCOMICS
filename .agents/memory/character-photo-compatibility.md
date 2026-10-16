@@ -38,3 +38,9 @@ Do not treat a successful HTTP response or a test using faces already present in
 **Why:** The provider accepted the previous requests, but the user showed that the resulting character did not resemble the independent uploaded portrait.
 
 **How to apply:** Inspect the exact generated panels against an independent reference face. If only a small screenshot thumbnail is available, disclose that limitation and do not claim the full-resolution original has been verified.
+
+Do not automatically resubmit comic generation after a browser transport failure.
+
+**Why:** A lost connection does not establish whether the server accepted the request or is still generating; blindly retrying can duplicate paid provider work.
+
+**How to apply:** Distinguish local style preparation from generation transport errors. Preserve the user's current inputs and report uncertainty rather than claiming a provider rejection or promising that retrying is free.

@@ -6,7 +6,7 @@ import { CharacterReferences, type CharacterReferenceItem } from '@/components/c
 import { ScriptDraft } from '@/components/script-draft';
 import { ComicDownloads } from '@/components/comic-downloads';
 import { DevPreviewUsage } from '@/components/dev-preview-usage';
-import { errorMessage as getErrorMessage } from '@/lib/error-message';
+import { errorMessage as getErrorMessage, comicRequestError } from '@/lib/error-message';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -139,15 +139,17 @@ function Home() {
       return;
     }
     const characterReferences = characterRefs.map(r => ({ characterName: r.characterName.trim(), ...(r.instructions?.trim() ? { instructions: r.instructions.trim() } : {}), imageDataUri: r.imageDataUri }));
+    let stage: 'style' | 'generation' = 'style';
     try {
       setPreparing(true);
       const styleReferenceImage = await loadReferenceAsJpeg(characterRefs.length > 0);
+      stage = 'generation';
       const result = await mutation.mutateAsync({
         data: { text: source.trim(), panelCount, styleReferenceImage, provider: effectiveProvider, ...(characterReferences.length ? { characterReferences } : {}) },
       });
       previousComic.current = result;
     } catch (error) {
-      setLocalError(getErrorMessage(error, 'The comic could not be generated. Please try again.'));
+      setLocalError(comicRequestError(error, stage));
     } finally {
       setPreparing(false);
     }

@@ -88,6 +88,11 @@ router.post("/comics/generate", async (req, res): Promise<void> => {
 
   let credit: Awaited<ReturnType<typeof reserveForRequest>> | undefined;
   try {
+    req.log.info({
+      panelCount: input.data.panelCount,
+      characterPhotoCount: input.data.characterReferences?.length ?? 0,
+      provider: input.data.characterReferences?.length ? "venice" : input.data.provider,
+    }, "Comic generation request received");
     credit = await reserveForRequest(req, "panels", input.data.panelCount);
     const comic = GenerateComicResponse.parse(await createComic(input.data));
     await credit.finish(comic.panels.length);
