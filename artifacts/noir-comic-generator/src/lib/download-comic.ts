@@ -126,7 +126,7 @@ export async function downloadComicPng(comic: DownloadableComic) {
   canvas.width = canvas.height = 0;
 }
 
-async function createFramePng(panel: DownloadableComic['panels'][number]): Promise<Blob> {
+export async function createFramePng(panel: DownloadableComic['panels'][number]): Promise<Blob> {
   const image = await loadImage(panel.imageDataUri);
   const canvas = document.createElement('canvas');
   canvas.width = 1024;

@@ -9,3 +9,4 @@
 - [Publishing evidence limits](publishing-evidence-limits.md) — old successful builds and missing-production-DB errors do not prove a stalled validator's cause.
 - [Character photo compatibility](character-photo-compatibility.md) — bundled clients must check server capability; four character photos plus the noir reference require five image inputs.
 - [Generation transport](generation-transport.md) — long Venice jobs need short progress requests; the temporary delivery buffer is not restart recovery or shared-worker storage.
+- [Comic video scope](comic-video-scope.md) — optional PC videos use the user's uploaded audio, with equal time for every completed comic panel.

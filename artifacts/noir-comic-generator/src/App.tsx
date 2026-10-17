@@ -5,6 +5,7 @@ import { DictationControl } from '@/components/dictation-control';
 import { CharacterReferences, type CharacterReferenceItem } from '@/components/character-references';
 import { ScriptDraft } from '@/components/script-draft';
 import { ComicDownloads } from '@/components/comic-downloads';
+import { ComicVideo } from '@/components/comic-video';
 import { DevPreviewUsage } from '@/components/dev-preview-usage';
 import { errorMessage as getErrorMessage, comicRequestError } from '@/lib/error-message';
 import { generateComicInBackground } from '@/lib/comic-job';
@@ -30,6 +31,7 @@ function Home() {
   const [characterRefs, setCharacterRefs] = useState<CharacterReferenceItem[]>([]);
   const effectiveProvider = characterRefs.length ? 'venice' : provider;
   const [preparingPhotos, setPreparingPhotos] = useState(false);
+  const [videoBusy, setVideoBusy] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [draftIdea, setDraftIdea] = useState('');
   const [regenerating, setRegenerating] = useState(false);
@@ -41,7 +43,8 @@ function Home() {
   const previousComic = useRef<typeof mutation.data>(undefined);
   const comic = mutation.data || previousComic.current;
   const isGenerating = preparing || mutation.isPending;
-  const isBusy = isGenerating || scriptMutation.isPending || dictating || regenerating || preparingPhotos;
+  const generationBusy = isGenerating || scriptMutation.isPending || dictating || regenerating || preparingPhotos;
+  const isBusy = generationBusy || videoBusy;
   useEffect(() => {
     if (scriptMutation.data) draftRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, [scriptMutation.data]);
@@ -300,6 +303,7 @@ function Home() {
               <span className="section-label">02 / 02</span>
             </div>
             {comic && <ComicDownloads comic={comic} disabled={isBusy} />}
+            {comic && <ComicVideo comic={comic} disabled={generationBusy} onBusyChange={setVideoBusy} />}
             {isGenerating ? (
               <div className="loading-stage" data-testid="status-generation-loading">
                 <div className="loading-copy"><span className="loading-mark" /> Generating your panels. This can take a few minutes.</div>
