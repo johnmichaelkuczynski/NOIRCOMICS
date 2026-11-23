@@ -1,19 +1,9 @@
 ---
 name: PC-only scope
-description: The user halted Android and billing work and directed attention exclusively to the PC app.
+description: Desktop-only scope is documented in replit.md; earlier mobile work is abandoned.
 ---
 
-All Android, billing, subscription and Google Play credential work is on hold. Do not resume it merely because the PC app has been repaired.
-
-**Why:** The user repeatedly said “STOP ALL ANDROID AND BILLING WORK” and “The ONLY objective is restoring the PC app.” They reiterated: “FORGET ABOUT THE ANDROID APP. THE PC VERSION IS ALL I CARE ABOUT NOW.”
-
-**How to apply:** Work on the PC app only unless the user explicitly requests otherwise. Preserve its generation engine, existing UI and writing during connection repairs. Do not request Android credentials.
-
-Old Android task cards and “waiting for input” prompts do not authorize resumed work. The user explicitly reiterated: “WE ARE NOT DOING ANDROID ANYMORE. STOP IT.”
-
-**Why:** An outstanding Android dictation prompt continued to appear after the user abandoned Android.
-
-**How to apply:** Do not pursue or ask for replies to Android tasks. Treat them as abandoned, not as pending user input.
+The authoritative desktop-only product scope and prohibition on resuming abandoned mobile work are in `replit.md`, under User preferences. Earlier phone/store plans are obsolete.
 
 The user explicitly said: “THE PC VERSION WORKS. DON'T FUCK WITH IT.” Do not modify the working PC application while investigating publishing.
 

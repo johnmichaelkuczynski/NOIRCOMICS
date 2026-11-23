@@ -6,7 +6,6 @@ import { CharacterReferences, type CharacterReferenceItem } from '@/components/c
 import { ScriptDraft } from '@/components/script-draft';
 import { ComicDownloads } from '@/components/comic-downloads';
 import { ComicVideo } from '@/components/comic-video';
-import { DevPreviewUsage } from '@/components/dev-preview-usage';
 import { errorMessage as getErrorMessage, comicRequestError } from '@/lib/error-message';
 import { generateComicInBackground } from '@/lib/comic-job';
 import noirStyleImage from '@/assets/noir-style.jpg?inline';
@@ -209,7 +208,7 @@ function Home() {
               </button>
             </div>
             <div className="editor-body">
-              {import.meta.env.DEV && <DevPreviewUsage />}
+              {import.meta.env.DEV && <p className="usage-note">Desktop comic generation is ready.</p>}
               <div className="field-title">
                 <label htmlFor="story-text">Writing or story idea</label>
                 <span>UP TO 8,000 CHARACTERS</span>

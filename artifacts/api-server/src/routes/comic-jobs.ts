@@ -2,7 +2,6 @@ import { Router, type IRouter } from "express";
 import { GenerateComicBody, GenerateComicResponse, GetComicJobResponse, StartComicJobResponse } from "@workspace/api-zod";
 import { ComicJobs } from "../lib/comic-jobs";
 import { createComic, ComicServiceError } from "../lib/comic-generator";
-import { reserveForRequest } from "../lib/billing";
 
 const router: IRouter = Router();
 const jobs = new ComicJobs();
@@ -18,21 +17,16 @@ router.post("/comics/jobs", (req, res): void => {
   }
   try {
     const job = jobs.start(key, input.data, async () => {
-      let credit: Awaited<ReturnType<typeof reserveForRequest>> | undefined;
       const started = Date.now();
       req.log.info({ panelCount: input.data.panelCount, characterPhotoCount: input.data.characterReferences?.length ?? 0 }, "Comic background generation started");
       try {
-        credit = await reserveForRequest(req, "panels", input.data.panelCount);
         const comic = GenerateComicResponse.parse(await createComic(input.data));
-        await credit.finish(comic.panels.length);
         req.log.info({ elapsedMs: Date.now() - started }, "Comic background generation completed");
         return comic;
       } catch (error) {
         req.log.error({ elapsedMs: Date.now() - started, errorType: error instanceof Error ? error.name : "unknown",
           message: error instanceof ComicServiceError ? error.message : "Comic generation failed" }, "Comic background generation failed");
         throw error;
-      } finally {
-        if (credit) await credit.finish(0).catch(() => req.log.error("Panel credit release failed"));
       }
     });
     res.status(202).json(StartComicJobResponse.parse(job));

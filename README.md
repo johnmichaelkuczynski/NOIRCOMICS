@@ -7,6 +7,8 @@
 
 ## Your story deserves a scene
 
+This is a desktop web application, used in your PC browser.
+
 A late-night conversation. A missing clue. An argument that changes how someone sees the world.
 
 Noir Comic Generator turns your writing into a sequence of atmospheric comic panels: dramatic lighting, expressive faces, deep shadows, and the unmistakable mood of classic film noir.

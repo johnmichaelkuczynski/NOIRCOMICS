@@ -48,7 +48,3 @@ Thumbs.db
 .cache/
 .local/
 /generated-artifacts/
-/.android-signing/
-/android/.gradle/
-/android/**/build/
-/android/local.properties

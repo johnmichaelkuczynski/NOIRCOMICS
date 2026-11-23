@@ -62,4 +62,11 @@ test("HTTP job acceptance, duplicate protection, private polling, and final deli
   assert.equal(result.comic?.panels.length, 1);
   assert.equal(imageCalls, 1);
   assert.equal(completed.headers.get("cache-control"), "no-store");
+
+  // The direct desktop endpoint remains usable without sessions, a database,
+  // payment checks, or a second generation path.
+  const direct = await http(base.replace("/jobs", "/generate"), { method: "POST", headers, body });
+  assert.equal(direct.status, 200);
+  assert.equal((await direct.json() as { panels: unknown[] }).panels.length, 1);
+  assert.equal(imageCalls, 2);
 });

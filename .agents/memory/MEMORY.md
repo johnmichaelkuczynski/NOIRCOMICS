@@ -1,11 +1,8 @@
 - [Comic source fidelity](comic-source-fidelity.md) — preserve conceptual claims in the dialogue; lighter adaptations can change the source's motivation or logic.
 - [Venice moderation limits](venice-moderation-limits.md) — authenticated Venice access does not guarantee acceptance of non-explicit swimwear scenes.
-- [Phone-app direction](phone-app-direction.md) — dictation is important because the user eventually wants a phone version with spoken script entry.
-- [Native toolchain compatibility](native-toolchain-compatibility.md) — this workspace has Nix and FHS runtimes; keep a native tool's interpreter and libc compatible.
 - [Database test safety](database-test-safety.md) — NODE_ENV alone does not isolate fixtures; verify a development target and guard cleanup hooks.
-- [Google Play setup](google-play-setup.md) — the optional OAuth connector is not a prerequisite for an AAB; use RevenueCat's documented Play service-credential setup.
 - [Development preview privacy](development-preview-privacy.md) — documented private defaults are not proof of this workspace's current access settings.
-- [PC-only scope](pc-only-scope.md) — Android, billing and credential work is halted; do not resume without explicit user direction.
+- [PC-only scope](pc-only-scope.md) — desktop-only direction is authoritative in replit.md; earlier mobile/store plans are obsolete.
 - [Publishing evidence limits](publishing-evidence-limits.md) — old successful builds and missing-production-DB errors do not prove a stalled validator's cause.
 - [Character photo compatibility](character-photo-compatibility.md) — bundled clients must check server capability; four character photos plus the noir reference require five image inputs.
 - [Generation transport](generation-transport.md) — long Venice jobs need short progress requests; the temporary delivery buffer is not restart recovery or shared-worker storage.
